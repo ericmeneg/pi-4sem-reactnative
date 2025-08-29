@@ -1,21 +1,27 @@
+import React from 'react'
 import { Share } from "react-native"
 import { Button } from "react-native-paper"
 
-async function onShare() {
+interface IShareButtonProps {
+    recipeUrl: string,
+    recipeTitle: string
+}
+
+async function onShare(recipeUrl: string, recipeTitle: string) {
     try {
         const result = await Share.share({
-            message: "Olha essa receita que eu encontrei no CozinhAI!\nhttps://exemplo.com.br",
-            url: "https://exemplo.com.br",
-            title: "CozinhAI - Exemplo"
+            message: "Olha essa receita que eu encontrei no CozinhAI!\n" + { recipeUrl },
+            url: recipeUrl,
+            title: recipeTitle
         })
     } catch (error) {
         console.error(error)
     }
 }
 
-export default function ShareButton() {
+export default function ShareButton(ShareButtonProps: IShareButtonProps) {
     return (
-        <Button icon="share-variant" mode="contained" onPress={onShare}>
+        <Button icon="share-variant" mode="contained" onPress={() => { onShare(ShareButtonProps.recipeUrl, ShareButtonProps.recipeTitle) }}>
             Compartilhar
         </Button>
     )
