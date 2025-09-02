@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     justifyContent: "center",
     alignItems: "center",
-    top: 150,
+    top: 100,
   },
   main: {
     flex: 1,
