@@ -37,8 +37,7 @@ export const themeContext = createContext({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    height: 1000,
+    height: 100,
   },
 
   header: {
@@ -48,6 +47,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     gap: 15,
+    width: 1300,
   },
 
   input: {
