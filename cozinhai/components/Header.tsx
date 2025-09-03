@@ -1,57 +1,54 @@
-import { Linking, Pressable, StyleSheet, TextInput, View } from "react-native";
-import React, { useContext, createContext } from "react";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import React, { useContext } from "react";
 import { FontAwesome } from "@expo/vector-icons";
-import { Link } from "expo-router";
-import { Button } from "react-native-paper";
+import { themeContext } from "../context/ThemeContext";
 
 export default function Header() {
   const { colors } = useContext(themeContext);
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="container">
       <View
         style={[styles.header, { backgroundColor: colors.headerBackground }]}
+        testID="header"
       >
-        <TextInput
-          placeholder="Busque suas receitas"
-          style={[styles.input, { borderColor: colors.darkBlue }]}
-          placeholderTextColor={"rgb(34, 87, 122, 38%)"}
-        />
-        <Pressable
-          onPress={() => {
-            console.log("Clicou na lupa");
-          }}
-        >
-          <FontAwesome name="search" size={20} color={colors.darkBlue} />
-        </Pressable>
+        <View style={styles.inputContent} testID="headerContent">
+          <TextInput
+            placeholder="Busque suas receitas"
+            style={[styles.input, { borderColor: colors.darkBlue }]}
+            placeholderTextColor={"rgb(34, 87, 122, 38%)"}
+          />
+          <Pressable
+            onPress={() => {
+              console.log("Clicou na lupa");
+            }}
+          >
+            <FontAwesome name="search" size={20} color={colors.darkBlue} />
+          </Pressable>
+        </View>
       </View>
     </View>
   );
 }
 
-export const themeContext = createContext({
-  colors: {
-    headerBackground: "#edf2f4",
-    darkBlue: "#22577A",
-  },
-});
-
 const styles = StyleSheet.create({
-  container: {
-    height: 100,
-  },
+  container: {},
 
   header: {
-    flex: 1,
-    padding: 15,
-    justifyContent: "center",
+    height: 120,
+    justifyContent: "flex-end",
     alignItems: "center",
+    padding: 25,
+  },
+
+  inputContent: {
     flexDirection: "row",
-    gap: 15,
-    width: 1300,
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    width: 500,
   },
 
   input: {
-    width: 400,
+    width: 250,
     borderWidth: 2,
     borderRadius: 16,
     padding: 6,

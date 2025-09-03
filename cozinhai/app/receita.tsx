@@ -1,12 +1,20 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import Header from "../components/Header";
+import ReceitaInfo from "../components/ReceitaInfo";
 
 export default function Receita() {
   return (
     <View style={styles.container}>
       <Header />
-      <View>
+
+      <View style={styles.main} testID="main">
         <Image source={require("../assets/logo.png")} style={styles.mainLogo} />
+
+        <View testID="receitaDiv">
+          <View testID="receitaHeader">
+            <ReceitaInfo />
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -15,21 +23,20 @@ export default function Receita() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    gap: 120,
   },
+
   mainLogo: {
-    width: 200,
+    width: 210,
     height: 50,
-    resizeMode: "contain",
     justifyContent: "center",
     alignItems: "center",
-    top: 100,
   },
+
   main: {
     flex: 1,
-    width: 600,
-    height: 600,
-    justifyContent: "center",
     alignItems: "center",
+    flexDirection: "column",
+    gap: 150,
   },
 });
