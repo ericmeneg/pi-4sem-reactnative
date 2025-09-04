@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import { IRecipe } from "../interfaces/recipe.interface"
 import { SPOONACULAR_API_KEY } from "@env"
 import RecipeCard from "./RecipeCard"
+import { ScrollView, StyleSheet } from "react-native"
+import { Text } from "react-native-paper"
 
 function seededRand(seed: number){
     let randomizedNumber = Math.sin(seed) * 1000
@@ -52,12 +54,21 @@ export default function DailyRecipes() {
     }, [])
 
     return(
-        <>
+        <ScrollView contentContainerStyle={{ padding: 20 }}>
+        <Text style={styles.title}>
+          Recomendações Diárias!
+        </Text>
         {
         recipes.map((recipe)=>(
             <RecipeCard key={recipe.id} recipe={recipe} />
         ))
         }
-        </>
+        </ScrollView>
     )
 }
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 32
+  }
+})
