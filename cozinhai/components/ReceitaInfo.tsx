@@ -15,6 +15,7 @@ export default function ReceitaInfo() {
     title: {
       color: colors.darkBlue,
       fontWeight: "bold",
+      fontSize: 20,
     },
 
     subTitleLow: {
@@ -43,7 +44,7 @@ export default function ReceitaInfo() {
           <MaterialCommunityIcons
             name="account"
             size={26}
-            color={colors.darkBlue}
+            style={styles.subTitleLow}
           />
           <Text style={styles.subTitleLow}>Serve X Pessoas</Text>
         </View>
@@ -52,7 +53,7 @@ export default function ReceitaInfo() {
           <MaterialCommunityIcons
             name="pot-steam-outline"
             size={26}
-            color={colors.darkBlue}
+            style={styles.subTitleLow}
           />
           <Text style={styles.subTitleLow}>Vai ao Fogo</Text>
         </View>
@@ -61,7 +62,7 @@ export default function ReceitaInfo() {
           <MaterialCommunityIcons
             name="clock-time-eight-outline"
             size={26}
-            color={colors.darkBlue}
+            style={styles.subTitleLow}
           />
           <Text style={styles.subTitleLow}>X Minutos</Text>
         </View>

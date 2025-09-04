@@ -11,7 +11,8 @@ export default function Receita() {
         <Image source={require("../assets/logo.png")} style={styles.mainLogo} />
 
         <View testID="receitaDiv">
-          <View testID="receitaHeader">
+          <View testID="receitaHeader" style={styles.receitaHeader}>
+            <Image source={require("../assets/churros.png")}></Image>
             <ReceitaInfo />
           </View>
         </View>
@@ -37,6 +38,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     flexDirection: "column",
-    gap: 150,
+    gap: 130,
+  },
+
+  receitaHeader: {
+    flexDirection: "row",
+    gap: 30,
+    alignItems: "center",
   },
 });
