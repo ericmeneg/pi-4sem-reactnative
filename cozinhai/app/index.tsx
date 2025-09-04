@@ -6,6 +6,7 @@ export default function Home() {
     <View>
       <Text>Você está no index.tsx</Text>
       <Link href="/receita">Ir para receitas</Link>
+      <Link href="/ingredientesEpoca">Ir para ingrediente sazonais</Link>
     </View>
   );
 }
