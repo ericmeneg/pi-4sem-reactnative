@@ -19,11 +19,12 @@ export default function ReceitaSteps() {
 
     descText: {
       color: colors.darkBlue,
+      paddingLeft: 12,
     },
 
     ingredient: {
       flexDirection: "row",
-      gap: 8,
+      gap: 2,
       paddingLeft: 15,
     },
 
@@ -42,13 +43,13 @@ export default function ReceitaSteps() {
       <View testID="ingredientsSection" style={styles.section}>
         <Text style={styles.title}>Ingredientes</Text>
         <View testID="ingredient" style={styles.ingredient}>
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
+          <View style={[{ alignItems: "center", justifyContent: "center" }]}>
             <MaterialCommunityIcons
               name="circle-medium"
               style={{ color: colors.darkBlue }}
             />
           </View>
-          <Text style={styles.descText}>Ingredient1</Text>
+          <Text style={{ color: colors.darkBlue }}>Ingredient1</Text>
         </View>
       </View>
 
