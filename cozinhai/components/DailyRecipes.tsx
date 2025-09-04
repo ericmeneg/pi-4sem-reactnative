@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { IRecipe } from "../interfaces/recipe.interface"
-import { Text } from "react-native-paper"
+import { SPOONACULAR_API_KEY } from "@env"
 import RecipeCard from "./RecipeCard"
 
 function seededRand(seed: number){
@@ -23,7 +23,7 @@ function getDailySeeds(): number[]{
 }
 
 async function getDailyRecipes(offsets: number[]): Promise<IRecipe[]> {
-  const API_KEY = "d9e89aa107a2446ea222d9c3004ad5ed"
+  const API_KEY = SPOONACULAR_API_KEY
   const baseUrl = "https://api.spoonacular.com/recipes/complexSearch"
 
   const results = await Promise.all(
