@@ -156,7 +156,7 @@ export default function PesquisarReceitas() {
             </View>
           </View>
 
-          <Button mode="contained" onPress={() => console.log("Popular clicado")}>
+          <Button buttonColor={colors.darkBlue} mode="contained" onPress={() => console.log("Popular clicado")}>
             Pesquisar
           </Button>
         </View>
