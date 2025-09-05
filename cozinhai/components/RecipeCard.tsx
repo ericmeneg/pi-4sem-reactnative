@@ -1,18 +1,19 @@
-import { useNavigation } from "expo-router";
-import { IRecipe } from "../interfaces/recipe.interface";
 import { StyleSheet } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
+import { IRecipe } from "../interfaces/recipe.interface";
 
 interface RecipeCardProps {
-    recipe: IRecipe
+    recipe: IRecipe;
+    onPress?: (recipe: IRecipe) => void; // Adicione esta linha
 }
 
-export default function RecipeCard({recipe}: RecipeCardProps){
-    const navigation = useNavigation<any>()
-
+export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
     const handlePress = () => {
-        navigation.navigate("RecipeDetail"), {id: recipe.id}
-    }
+        if (onPress) {
+            onPress(recipe);
+        } else {
+        }
+    };
 
     return (
         <Card style={styles.card}>
@@ -28,7 +29,7 @@ export default function RecipeCard({recipe}: RecipeCardProps){
                 </Button>
             </Card.Actions>
         </Card>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -43,4 +44,4 @@ const styles = StyleSheet.create({
         marginTop: 10,
         textAlign: "center"
     }
-})
+});
