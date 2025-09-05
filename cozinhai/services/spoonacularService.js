@@ -1,4 +1,4 @@
-const SPOONACULAR_API_KEY = 'cd69d4122e7741a99c0ad457c4b94698';
+const SPOONACULAR_API_KEY = 'chave_da_api';
 const BASE_URL = 'https://api.spoonacular.com/recipes';
 
 export const spoonacularService = {
