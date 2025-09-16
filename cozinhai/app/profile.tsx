@@ -2,14 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AntDesign } from '@expo/vector-icons';
-import Header from '../components/Header'; // Ajuste o caminho se necessário
+import Header from '../components/Header'
 
 const ProfileScreen = () => {
   return (
     <ScrollView style={styles.scrollViewContainer}>
       {/* <Header /> */}
       
-      {/* Contêiner superior: foto, nome e texto */}
       <View style={styles.profileHeader}>
         <View style={styles.userInfo}>
           <Image
@@ -25,7 +24,6 @@ const ProfileScreen = () => {
         </View>
       </View>
       
-      {/* Contêiner dos botões de Ações e o botão de Sair */}
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buttonWrapper}>
           <LinearGradient
