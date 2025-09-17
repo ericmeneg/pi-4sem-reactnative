@@ -1,6 +1,4 @@
-import DailyRecipes from "../components/DailyRecipes";
-import ShareButton from "../components/ShareButton";
-import { IRecipe } from "../interfaces/recipe.interface";
+import DailyRecipes from "../../components/DailyRecipes";
 
 const receitaExemplo = {
   recipeUrl: "www.google.com",

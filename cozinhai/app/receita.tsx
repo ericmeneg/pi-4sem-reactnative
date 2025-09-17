@@ -1,8 +1,7 @@
-import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import Header from "../components/Header";
 import ReceitaInfo from "../components/ReceitaInfo";
 import ReceitaSteps from "../components/ReceitaSteps";
-import NavBar from "../components/NavBar";
 
 export default function Receita() {
   return (
@@ -22,7 +21,6 @@ export default function Receita() {
           </View>
           <ReceitaSteps />
         </View>
-        <NavBar />
       </View>
     </ScrollView>
   );

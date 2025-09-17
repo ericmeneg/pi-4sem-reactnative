@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, FlatList } from "react-native";
-import Header from "../components/Header";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+} from "react-native";
+import Header from "../../components/Header";
 
 interface Alimento {
   nome: string;
@@ -100,37 +109,76 @@ const alimentos: Alimento[] = [
   { nome: "Tomate-caqui", meses: [9] },
 ];
 
-const mesesNome = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const mesesNome = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
 
 export default function IngredientesEpoca() {
   const [mesSelecionado, setMesSelecionado] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const ingredientesDoMes = mesSelecionado
-    ? alimentos.filter((a) => a.meses.includes(mesSelecionado)).map((a) => a.nome)
+    ? alimentos
+        .filter((a) => a.meses.includes(mesSelecionado))
+        .map((a) => a.nome)
     : [];
 
   return (
     <ScrollView style={styles.container}>
       <Header />
       <View style={styles.main}>
-        <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+        <Image
+          source={require("../../assets/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>Ingredientes da Época</Text>
 
-        <TouchableOpacity style={styles.mesSelecionadoBox} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity
+          style={styles.mesSelecionadoBox}
+          onPress={() => setModalVisible(true)}
+        >
           <Text style={styles.mesSelecionadoText}>
-            {mesSelecionado ? `Mês Selecionado: ${mesesNome[mesSelecionado - 1]}` : "Selecionar Mês"}
+            {mesSelecionado
+              ? `Mês Selecionado: ${mesesNome[mesSelecionado - 1]}`
+              : "Selecionar Mês"}
           </Text>
         </TouchableOpacity>
 
-        <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
-          <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={() => setModalVisible(false)}>
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPressOut={() => setModalVisible(false)}
+          >
             <View style={styles.modalContent}>
               <FlatList
                 data={mesesNome}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                  <TouchableOpacity style={styles.mesOption} onPress={() => { setMesSelecionado(index + 1); setModalVisible(false); }}>
+                  <TouchableOpacity
+                    style={styles.mesOption}
+                    onPress={() => {
+                      setMesSelecionado(index + 1);
+                      setModalVisible(false);
+                    }}
+                  >
                     <Text style={styles.mesOptionText}>{item}</Text>
                   </TouchableOpacity>
                 )}
@@ -160,19 +208,71 @@ export default function IngredientesEpoca() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  main: { alignItems: "center", paddingTop: 20, paddingHorizontal: 16, gap: 20 },
+  main: {
+    alignItems: "center",
+    paddingTop: 20,
+    paddingHorizontal: 16,
+    gap: 20,
+  },
   logo: { width: 250, height: 250, marginBottom: 0 },
-  title: { fontSize: 33, fontWeight: "bold", color: "#22577A", marginBottom: 20 },
+  title: {
+    fontSize: 33,
+    fontWeight: "bold",
+    color: "#22577A",
+    marginBottom: 20,
+  },
 
-  mesSelecionadoBox: { backgroundColor: "#22577A", borderRadius: 100, paddingVertical: 14, paddingHorizontal: 24, alignItems: "center", marginBottom: 10 },
+  mesSelecionadoBox: {
+    backgroundColor: "#22577A",
+    borderRadius: 100,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    marginBottom: 10,
+  },
   mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", alignItems: "center" },
-  modalContent: { backgroundColor: "#fff", borderRadius: 20, width: "80%", maxHeight: "50%", paddingVertical: 10 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.3)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    width: "80%",
+    maxHeight: "50%",
+    paddingVertical: 10,
+  },
   mesOption: { paddingVertical: 12, paddingHorizontal: 20 },
   mesOptionText: { fontSize: 16, color: "#22577A" },
 
-  ingredientesContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 20, gap: 10 },
-  ingredienteTag: { borderWidth: 1, borderColor: "#22577A", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, marginBottom: 10, flexBasis: "30%", maxWidth: "30%", alignItems: "center", justifyContent: "center", minHeight: 60, alignSelf: "flex-start" },
-  ingredienteText: { fontSize: 18, color: "#22577A", fontWeight: "700", textAlign: "center" },
+  ingredientesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: 20,
+    gap: 10,
+  },
+  ingredienteTag: {
+    borderWidth: 1,
+    borderColor: "#22577A",
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginBottom: 10,
+    flexBasis: "30%",
+    maxWidth: "30%",
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 60,
+    alignSelf: "flex-start",
+  },
+  ingredienteText: {
+    fontSize: 18,
+    color: "#22577A",
+    fontWeight: "700",
+    textAlign: "center",
+  },
 });
