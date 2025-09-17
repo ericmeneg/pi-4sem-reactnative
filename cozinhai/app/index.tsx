@@ -8,6 +8,7 @@ export default function Home() {
       <Link href="/receita">Ir para receitas</Link>
       <Link href="/ingredientesEpoca">Ir para ingrediente sazonais</Link>
       <Link href="/pesquisarReceitas">Ir para pesquisa de receitas</Link>
+      <Link href="/playground">Ir para exemplos de componente</Link>
     </View>
   );
 }

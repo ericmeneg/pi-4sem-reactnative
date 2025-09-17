@@ -2,7 +2,7 @@ import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import Header from "../components/Header";
 import ReceitaInfo from "../components/ReceitaInfo";
 import ReceitaSteps from "../components/ReceitaSteps";
-import Footer from "../components/Footer";
+import NavBar from "../components/NavBar";
 
 export default function Receita() {
   return (
@@ -22,9 +22,8 @@ export default function Receita() {
           </View>
           <ReceitaSteps />
         </View>
+        <NavBar />
       </View>
-
-      <Footer />
     </ScrollView>
   );
 }
@@ -45,10 +44,10 @@ const styles = StyleSheet.create({
   main: {
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
     flexDirection: "column",
     gap: 130,
     paddingTop: 100,
-    paddingBottom: 70,
   },
 
   receitaHeader: {
@@ -61,5 +60,6 @@ const styles = StyleSheet.create({
   receitaDiv: {
     gap: 40,
     padding: 20,
+    paddingBottom: 180,
   },
 });
