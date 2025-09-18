@@ -1,11 +1,23 @@
 import React, { useContext, useState } from "react";
-import {ScrollView,StyleSheet,View,Image,ActivityIndicator,SafeAreaView,TextInput,Pressable,Alert,FlatList,Dimensions} from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Image,
+  ActivityIndicator,
+  SafeAreaView,
+  TextInput,
+  Pressable,
+  Alert,
+  FlatList,
+  Dimensions,
+} from "react-native";
 import { Text, Checkbox, Button, Card } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
-import RecipeCard from "../components/RecipeCard";
-import { themeContext } from "../context/ThemeContext";
-import Footer from "../components/Footer";
-import { spoonacularService } from "../services/spoonacularService";
+import RecipeCard from "../../components/RecipeCard";
+import { themeContext } from "../../context/ThemeContext";
+import Footer from "../../components/Footer";
+import { spoonacularService } from "../../services/spoonacularService";
 
 // Adaptada para que a API retorna
 interface Recipe {
@@ -25,9 +37,9 @@ export default function PesquisarReceitas() {
     glutenFree: false,
     dairyFree: false,
   });
-  const [searchQuery, setSearchQuery] = useState(""); 
-  const [searchResults, setSearchResults] = useState<Recipe[]>([]); 
-  const [isLoading, setIsLoading] = useState(false); 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Recipe[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
   const { colors } = useContext(themeContext);
@@ -49,7 +61,10 @@ export default function PesquisarReceitas() {
     try {
       console.log("Buscando receitas para:", searchQuery);
 
-      const results = await spoonacularService.searchRecipes(searchQuery, "both");
+      const results = await spoonacularService.searchRecipes(
+        searchQuery,
+        "both"
+      );
 
       console.log("Resultados encontrados:", results.totalResults);
 
@@ -71,7 +86,9 @@ export default function PesquisarReceitas() {
   };
 
   const renderRecipe = ({ item }: { item: Recipe }) => (
-    <View style={styles.recipeCardWrapper}> {/* Wrapper para aplicar margem entre os cards */}
+    <View style={styles.recipeCardWrapper}>
+      {" "}
+      {/* Wrapper para aplicar margem entre os cards */}
       <RecipeCard recipe={item} onPress={handleRecipePress} />
     </View>
   );
@@ -81,7 +98,7 @@ export default function PesquisarReceitas() {
       <ScrollView style={styles.scrollViewContent}>
         <View style={styles.mainContent}>
           <Image
-            source={require("../assets/logo.png")}
+            source={require("../../assets/logo.png")}
             style={styles.mainImage}
             resizeMode="contain"
           />
@@ -104,7 +121,10 @@ export default function PesquisarReceitas() {
             <Pressable
               onPress={handleSearch}
               disabled={isLoading}
-              style={[styles.searchButton, isLoading && styles.searchButtonDisabled]}
+              style={[
+                styles.searchButton,
+                isLoading && styles.searchButtonDisabled,
+              ]}
             >
               {isLoading ? (
                 <ActivityIndicator size="small" color={colors.darkBlue} />
@@ -156,7 +176,11 @@ export default function PesquisarReceitas() {
             </View>
           </View>
 
-          <Button buttonColor={colors.darkBlue} mode="contained" onPress={() => console.log("Popular clicado")}>
+          <Button
+            buttonColor={colors.darkBlue}
+            mode="contained"
+            onPress={() => console.log("Popular clicado")}
+          >
             Pesquisar
           </Button>
         </View>
@@ -184,10 +208,17 @@ export default function PesquisarReceitas() {
             ) : (
               hasSearched && (
                 <View style={styles.emptyContainer}>
-                  <Text style={[styles.emptyText, { color: colors.secondaryText }]}>
+                  <Text
+                    style={[styles.emptyText, { color: colors.secondaryText }]}
+                  >
                     Nenhuma receita encontrada.
                   </Text>
-                  <Text style={[styles.emptySubtext, { color: colors.secondaryText }]}>
+                  <Text
+                    style={[
+                      styles.emptySubtext,
+                      { color: colors.secondaryText },
+                    ]}
+                  >
                     Tente buscar por outros ingredientes ou nomes de receitas.
                   </Text>
                 </View>
@@ -249,11 +280,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    width: "100%", 
-    marginBottom: 20, 
+    width: "100%",
+    marginBottom: 20,
   },
   input: {
-    width: "70%", 
+    width: "70%",
     borderWidth: 2,
     borderRadius: 16,
     padding: 6,
@@ -310,7 +341,7 @@ const styles = StyleSheet.create({
   },
   row: {
     justifyContent: "space-between",
-    marginBottom: 16, 
+    marginBottom: 16,
   },
   recipeCardWrapper: {
     width: cardWidth,
