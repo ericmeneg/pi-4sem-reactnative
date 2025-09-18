@@ -1,6 +1,6 @@
-import { Text } from "react-native-paper"
-import DailyRecipes from "../components/DailyRecipes"
 import { IRecipe } from "../interfaces/recipe.interface"
+import RecipeCard from "../components/RecipeCard"
+import { ScrollView } from "react-native"
 
 export default function LivroReceitas(){
     let receitasDemo: IRecipe[] = [{
@@ -32,7 +32,15 @@ export default function LivroReceitas(){
     
     return(
         <>
-        <Text></Text>
+        <ScrollView>
+        {
+            receitasDemo.map((receita) =>(
+                <RecipeCard 
+                key = {receita.id}
+                recipe = {receita}/>
+            ))
+        }
+        </ScrollView>
         </>
     )
 }
