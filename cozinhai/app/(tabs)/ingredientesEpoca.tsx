@@ -213,6 +213,7 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingHorizontal: 16,
     gap: 20,
+    marginBottom: 140,
   },
   logo: { width: 250, height: 250, marginBottom: 0 },
   title: {

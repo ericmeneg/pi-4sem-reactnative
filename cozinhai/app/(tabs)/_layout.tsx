@@ -19,8 +19,6 @@ export default function Layout() {
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           /*borderColor: colors.darkBlue, */
-          borderBottomWidth: 0,
-          borderWidth: 5,
           paddingTop: 15,
         },
       }}
@@ -34,6 +32,7 @@ export default function Layout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="pesquisarReceitas"
         options={{
@@ -43,19 +42,7 @@ export default function Layout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: "DashBoard",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="view-dashboard"
-              size={30}
-              color={color}
-            />
-          ),
-        }}
-      />
+
       <Tabs.Screen
         name="ingredientesEpoca"
         options={{
@@ -65,16 +52,13 @@ export default function Layout() {
           ),
         }}
       />
+
       <Tabs.Screen
-        name="playground"
+        name="perfil"
         options={{
-          title: "Playground",
+          title: "Perfil",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="play-circle"
-              size={30}
-              color={color}
-            />
+            <MaterialCommunityIcons name="account" size={30} color={color} />
           ),
         }}
       />

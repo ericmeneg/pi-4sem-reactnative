@@ -1,4 +1,4 @@
-import DailyRecipes from "../../components/DailyRecipes";
+import DailyRecipes from "../components/DailyRecipes";
 
 const receitaExemplo = {
   recipeUrl: "www.google.com",
