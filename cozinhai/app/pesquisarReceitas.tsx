@@ -1,38 +1,51 @@
-import React, { useContext, useState } from "react";
-import {ScrollView,StyleSheet,View,Image,ActivityIndicator,SafeAreaView,TextInput,Pressable,Alert,FlatList,Dimensions} from "react-native";
-import { Text, Checkbox, Button, Card } from "react-native-paper";
-import { FontAwesome } from "@expo/vector-icons";
-import RecipeCard from "../components/RecipeCard";
-import { themeContext } from "../context/ThemeContext";
-import Footer from "../components/Footer";
-import { spoonacularService } from "../services/spoonacularService";
+import React, { useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  Image,
+  TextInput,
+  Pressable,
+  ActivityIndicator,
+  FlatList,
+  Dimensions,
+  Alert,
+  Text,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 
-// Adaptada para que a API retorna
-interface Recipe {
-  id: number;
-  title: string;
-  image: string;
-  // Adicione outras propriedades se seu RecipeCard original as usa e a API as retorna
-}
-
-const { width } = Dimensions.get("window");
-const cardWidth = (width - 60) / 2; // 2 colunas com margem para o FlatList
+// Dados de receitas de exemplo para mostrar o layout
+const DUMMY_RECIPES = [
+  {
+    id: "1",
+    title: "Tomate recheado com cenoura",
+    image: "https://via.placeholder.com/200",
+  },
+  {
+    id: "2",
+    title: "Molho de tomate com cenoura",
+    image: "https://via.placeholder.com/200",
+  },
+];
 
 export default function PesquisarReceitas() {
+  const router = useRouter();
   const [filters, setFilters] = useState({
     vegan: false,
     vegetarian: false,
     glutenFree: false,
     dairyFree: false,
   });
-  const [searchQuery, setSearchQuery] = useState(""); 
-  const [searchResults, setSearchResults] = useState<Recipe[]>([]); 
-  const [isLoading, setIsLoading] = useState(false); 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
 
-  const { colors } = useContext(themeContext);
-
-  const toggleFilter = (key: keyof typeof filters) => () => {
+  const toggleFilter = (key) => () => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
@@ -42,19 +55,14 @@ export default function PesquisarReceitas() {
       return;
     }
 
-    setIsLoading(true); // Inicia o loading
-    setSearchResults([]); // Limpa resultados anteriores
-    setHasSearched(false); // Reseta o estado de busca
+    setIsLoading(true);
+    setSearchResults([]);
+    setHasSearched(false);
 
     try {
-      console.log("Buscando receitas para:", searchQuery);
-
-      const results = await spoonacularService.searchRecipes(searchQuery, "both");
-
-      console.log("Resultados encontrados:", results.totalResults);
-
-      setSearchResults(results.results);
-      setHasSearched(true); // Define que uma busca foi realizada
+      // Simulação da busca de receitas com dados de exemplo
+      setSearchResults(DUMMY_RECIPES);
+      setHasSearched(true);
     } catch (error) {
       console.error("Erro na busca:", error);
       Alert.alert(
@@ -62,144 +70,170 @@ export default function PesquisarReceitas() {
         "Não foi possível buscar as receitas. Verifique sua conexão e tente novamente."
       );
     } finally {
-      setIsLoading(false); // Finaliza o loading
+      setIsLoading(false);
     }
   };
 
-  const handleRecipePress = (recipe: Recipe) => {
-    console.log("Clicou na receita:", recipe.title);
-  };
-
-  const renderRecipe = ({ item }: { item: Recipe }) => (
-    <View style={styles.recipeCardWrapper}> {/* Wrapper para aplicar margem entre os cards */}
-      <RecipeCard recipe={item} onPress={handleRecipePress} />
+  const renderRecipe = ({ item }) => (
+    <View style={styles.recipeCardWrapper}>
+      <View style={styles.cardContentWrapper}>
+        <Image
+          source={{ uri: item.image }}
+          style={styles.cardImage}
+        />
+        <View style={styles.textAndButtonContainer}>
+          <Text style={styles.cardTitle}>{item.title}</Text>
+          <Pressable onPress={() => console.log("Ver receita")}>
+            <LinearGradient
+              colors={['#57CC99', '#22577A']}
+              style={styles.gradientButton}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+            >
+              <Text style={styles.buttonText}>Ver Receita</Text>
+            </LinearGradient>
+          </Pressable>
+        </View>
+      </View>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <Image
+          source={require("../assets/logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
+
+      {/* Conteúdo Principal */}
       <ScrollView style={styles.scrollViewContent}>
         <View style={styles.mainContent}>
-          <Image
-            source={require("../assets/logo.png")}
-            style={styles.mainImage}
-            resizeMode="contain"
-          />
-
-          <Text style={[styles.title, { color: colors.darkBlue }]}>
-            Pesquisar Receitas
-          </Text>
-
-          <View style={styles.inputContent} testID="headerContent">
+          {/* Barra de Pesquisa */}
+          <View style={styles.searchBarContainer}>
             <TextInput
-              placeholder="Busque suas receitas"
-              style={[styles.input, { borderColor: colors.darkBlue }]}
-              placeholderTextColor={"rgb(34, 87, 122, 38%)"}
+              placeholder="Insira os ingredientes que você tem"
+              style={styles.searchInput}
               value={searchQuery}
               onChangeText={setSearchQuery}
               onSubmitEditing={handleSearch}
-              returnKeyType="search"
-              editable={!isLoading}
             />
+            <Pressable onPress={handleSearch} style={styles.searchButton}>
+              <LinearGradient
+                colors={['#57CC99', '#22577A']}
+                style={styles.gradientButtonSearch}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+              >
+                {isLoading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <FontAwesome name="search" size={20} color="#fff" />
+                )}
+              </LinearGradient>
+            </Pressable>
             <Pressable
-              onPress={handleSearch}
-              disabled={isLoading}
-              style={[styles.searchButton, isLoading && styles.searchButtonDisabled]}
+              onPress={() => setIsFilterVisible(!isFilterVisible)}
+              style={styles.filterButton}
             >
-              {isLoading ? (
-                <ActivityIndicator size="small" color={colors.darkBlue} />
-              ) : (
-                <FontAwesome name="search" size={20} color={colors.darkBlue} />
-              )}
+              <LinearGradient
+                colors={['#57CC99', '#22577A']}
+                style={styles.gradientButtonFilter}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+              >
+                <FontAwesome name="filter" size={20} color="#fff" />
+              </LinearGradient>
             </Pressable>
           </View>
 
-          <Text style={[styles.subtitle, { color: colors.darkBlue }]}>
-            Filtros Avançados
-          </Text>
-
-          <View style={styles.filters}>
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.vegan ? "checked" : "unchecked"}
-                onPress={toggleFilter("vegan")}
-                color={colors.darkBlue}
-              />
-              <Text>Vegano</Text>
-            </View>
-
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.vegetarian ? "checked" : "unchecked"}
-                onPress={toggleFilter("vegetarian")}
-                color={colors.darkBlue}
-              />
-              <Text>Vegetariano</Text>
-            </View>
-
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.glutenFree ? "checked" : "unchecked"}
-                onPress={toggleFilter("glutenFree")}
-                color={colors.darkBlue}
-              />
-              <Text>Sem Glúten</Text>
-            </View>
-
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.dairyFree ? "checked" : "unchecked"}
-                onPress={toggleFilter("dairyFree")}
-                color={colors.darkBlue}
-              />
-              <Text>Sem Lactose</Text>
-            </View>
-          </View>
-
-          <Button buttonColor={colors.darkBlue} mode="contained" onPress={() => console.log("Popular clicado")}>
-            Pesquisar
-          </Button>
-        </View>
-
-        {/* Exibe os resultados da pesquisa ou mensagem de estado */}
-        {(isLoading || hasSearched) && (
-          <View style={styles.searchResultsContainer}>
-            {isLoading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={[styles.loadingText, { color: colors.text }]}>
-                  Buscando receitas...
-                </Text>
+          {/* Filtros */}
+          {isFilterVisible && (
+            <View style={styles.filtersContainer}>
+              <View style={styles.filterItem}>
+                <Pressable onPress={toggleFilter("dairyFree")}>
+                  <View style={[styles.checkbox, filters.dairyFree && styles.checkboxChecked]} />
+                </Pressable>
+                <Text style={styles.filterText}>Sem Lactose</Text>
               </View>
-            ) : searchResults.length > 0 ? (
-              <FlatList
-                data={searchResults}
-                renderItem={renderRecipe}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2}
-                columnWrapperStyle={styles.row}
-                contentContainerStyle={styles.listContainer}
-                showsVerticalScrollIndicator={false}
-              />
-            ) : (
-              hasSearched && (
-                <View style={styles.emptyContainer}>
-                  <Text style={[styles.emptyText, { color: colors.secondaryText }]}>
-                    Nenhuma receita encontrada.
-                  </Text>
-                  <Text style={[styles.emptySubtext, { color: colors.secondaryText }]}>
-                    Tente buscar por outros ingredientes ou nomes de receitas.
-                  </Text>
-                </View>
-              )
-            )}
-          </View>
-        )}
+              <View style={styles.filterItem}>
+                <Pressable onPress={toggleFilter("glutenFree")}>
+                  <View style={[styles.checkbox, filters.glutenFree && styles.checkboxChecked]} />
+                </Pressable>
+                <Text style={styles.filterText}>Sem Glúten</Text>
+              </View>
+              <View style={styles.filterItem}>
+                <Pressable onPress={toggleFilter("vegetarian")}>
+                  <View style={[styles.checkbox, filters.vegetarian && styles.checkboxChecked]} />
+                </Pressable>
+                <Text style={styles.filterText}>Vegetariano</Text>
+              </View>
+              <View style={styles.filterItem}>
+                <Pressable onPress={toggleFilter("vegan")}>
+                  <View style={[styles.checkbox, filters.vegan && styles.checkboxChecked]} />
+                </Pressable>
+                <Text style={styles.filterText}>Vegano</Text>
+              </View>
+            </View>
+          )}
 
-        <View style={{ width: "100%" }}>
-          <Footer />
+          {/* Resultados da Pesquisa */}
+          {(isLoading || hasSearched) && (
+            <View style={styles.searchResultsContainer}>
+              {isLoading ? (
+                <ActivityIndicator
+                  size="large"
+                  color="#22577A"
+                  style={{ marginTop: 20 }}
+                />
+              ) : searchResults.length > 0 ? (
+                <FlatList
+                  data={searchResults}
+                  renderItem={renderRecipe}
+                  keyExtractor={(item) => item.id}
+                  numColumns={1}
+                  contentContainerStyle={styles.listContainer}
+                  showsVerticalScrollIndicator={false}
+                />
+              ) : (
+                hasSearched && (
+                  <View style={styles.emptyContainer}>
+                    <Text style={styles.emptyText}>
+                      Nenhuma receita encontrada.
+                    </Text>
+                    <Text style={styles.emptySubtext}>
+                      Tente buscar por outros nomes.
+                    </Text>
+                  </View>
+                )
+              )}
+            </View>
+          )}
         </View>
       </ScrollView>
+
+      {/* Footer de navegação */}
+      <View style={styles.footer}>
+        <Pressable onPress={() => router.push("/")} style={styles.footerItem}>
+          <AntDesign name="home" size={24} color="white" />
+          <Text style={styles.footerText}>Home</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push("/pesquisarReceitas")} style={styles.footerItem}>
+          <FontAwesome name="search" size={24} color="white" />
+          <Text style={styles.footerText}>Busca por título</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push("#")} style={styles.footerItem}>
+          <MaterialCommunityIcons name="shopping" size={24} color="white" />
+          <Text style={styles.footerText}>Busca por lista</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push("/profile")} style={styles.footerItem}>
+          <MaterialCommunityIcons name="account" size={24} color="white" />
+          <Text style={styles.footerText}>Perfil</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -209,110 +243,167 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  header: {
+    backgroundColor: "#fff",
+    height: 90,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  logo: {
+    width: 175.71,
+    height: 39.16,
+  },
   scrollViewContent: {
     flex: 1,
   },
   mainContent: {
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    gap: 20,
+    padding: 20,
+    alignItems: "center",
   },
-  mainImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 10,
-    alignSelf: "center",
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  filters: {
+  searchBarContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     width: "100%",
-    gap: 10,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  searchInput: {
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    color: "#333",
+    paddingVertical: 0,
+  },
+  searchButton: {
+    padding: 0, // Remova o padding do Pressable
+    marginLeft: 10,
+    borderRadius: 8,
+    overflow: 'hidden', // Importante para que o gradiente respeite as bordas arredondadas
+  },
+  gradientButtonSearch: {
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filterButton: {
+    padding: 0, // Remova o padding do Pressable
+    marginLeft: 10,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  gradientButtonFilter: {
+    padding: 10, // Adicione o padding ao gradiente
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  filtersContainer: {
+    position: "absolute",
+    right: 20,
+    top: 60,
+    backgroundColor: "#D9E3E9",
+    borderRadius: 10,
+    padding: 15,
+    zIndex: 1,
   },
   filterItem: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    marginBottom: 5,
   },
-  filterLabel: {
-    color: "#22577A",
+  filterText: {
+    marginLeft: 8,
+    fontSize: 16,
   },
-  inputContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    width: "100%", 
-    marginBottom: 20, 
-  },
-  input: {
-    width: "70%", 
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
     borderWidth: 2,
-    borderRadius: 16,
-    padding: 6,
+    borderColor: "#22577A",
+    backgroundColor: "#fff",
   },
-  searchButton: {
-    padding: 8,
-    borderRadius: 8,
-  },
-  searchButtonDisabled: {
-    opacity: 0.5,
-  },
-  button: {
-    marginTop: 20,
-    alignSelf: "center",
-    width: "100%",
-    maxWidth: 400,
+  checkboxChecked: {
+    backgroundColor: "#22577A",
   },
   searchResultsContainer: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 40,
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    fontWeight: "500",
+    width: "100%",
   },
   emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 40,
-    paddingVertical: 40,
+    paddingTop: 40,
   },
   emptyText: {
     fontSize: 18,
     fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 8,
+    color: "#665",
   },
   emptySubtext: {
     fontSize: 14,
-    textAlign: "center",
-    lineHeight: 20,
+    color: "#999",
   },
   listContainer: {
     paddingBottom: 20,
   },
-  row: {
-    justifyContent: "space-between",
-    marginBottom: 16, 
-  },
   recipeCardWrapper: {
-    width: cardWidth,
+    marginBottom: 15,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    overflow: "hidden",
+  },
+  cardContentWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  cardImage: {
+    width: 100,
+    height: 100,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
+  },
+  textAndButtonContainer: {
+    flex: 1,
+    padding: 10,
+    justifyContent: "space-between",
+  },
+  cardTitle: {
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  gradientButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  footer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#22577A",
+    paddingVertical: 10,
+    alignItems: "center",
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+  },
+  footerItem: {
+    alignItems: "center",
+  },
+  footerText: {
+    color: "white",
+    fontSize: 12,
+    marginTop: 4,
   },
 });
