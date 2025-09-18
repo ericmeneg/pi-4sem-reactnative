@@ -16,7 +16,7 @@ export default function BookmarkButton({
   activeColor = "#22577A",
   inactiveColor = "#CCCCCC",
 }: BookmarkButtonProps){
-  const [isBookmarked, setIsBookmarked] = useState(false)
+  const [isBookmarked, setIsBookmarked] = useState(true)
 
   const handlePress = () => {
     setIsBookmarked(!isBookmarked)
