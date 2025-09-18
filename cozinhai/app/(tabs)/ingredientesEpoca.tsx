@@ -136,7 +136,6 @@ export default function IngredientesEpoca() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.container}>
-
         <View style={styles.main}>
           <Image
             source={require("../../assets/logo.png")}
@@ -157,7 +156,6 @@ export default function IngredientesEpoca() {
             </Text>
           </TouchableOpacity>
 
-          {/* Ingredientes */}
           <View style={styles.ingredientesContainer}>
             {ingredientesDoMes.map((ingrediente) => (
               <View style={styles.ingredienteTag} key={ingrediente}>
@@ -167,7 +165,6 @@ export default function IngredientesEpoca() {
           </View>
         </View>
 
-        {/* Modal */}
         <Modal
           visible={modalVisible}
           transparent
@@ -206,7 +203,7 @@ export default function IngredientesEpoca() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: "#F9FAFB", // fundo mais claro (cinza suave)
+    backgroundColor: "#F9FAFB",
   },
   container: { flex: 1 },
   main: {
@@ -216,14 +213,13 @@ const styles = StyleSheet.create({
     gap: 20,
     marginBottom: 100,
   },
-  logo: { width: 200, height: 200 }, // menor que antes
+  logo: { width: 200, height: 200 },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     color: "#22577A",
     marginTop: 8,
   },
-
   mesSelecionadoBox: {
     backgroundColor: "#22577A",
     borderRadius: 50,
@@ -231,17 +227,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     alignItems: "center",
     marginTop: 16,
-    elevation: 3, // sombra no Android
-    shadowColor: "#000", // sombra no iOS
+    elevation: 3,
+    shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowRadius: 4,
   },
   mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)", // menos escuro
-    justifyContent: "flex-end", // faz o conteúdo colar embaixo
+    backgroundColor: "rgba(0,0,0,0.25)",
+    justifyContent: "flex-end",
   },
   modalContent: {
     backgroundColor: "#fff",
@@ -261,7 +256,6 @@ const styles = StyleSheet.create({
   },
   mesOption: { paddingVertical: 14, paddingHorizontal: 20 },
   mesOptionText: { fontSize: 16, color: "#22577A" },
-
   ingredientesContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -270,7 +264,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   ingredienteTag: {
-    backgroundColor: "#E6F4F1", // cor suave ligada ao tema (#22577A mais claro)
+    backgroundColor: "#E6F4F1",
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
