@@ -8,8 +8,8 @@ import {
   TouchableOpacity,
   Modal,
   FlatList,
+  SafeAreaView,
 } from "react-native";
-import Header from "../../components/Header";
 
 interface Alimento {
   nome: string;
@@ -124,42 +124,54 @@ const mesesNome = [
   "Dezembro",
 ];
 
+
 export default function IngredientesEpoca() {
   const [mesSelecionado, setMesSelecionado] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const ingredientesDoMes = mesSelecionado
-    ? alimentos
-        .filter((a) => a.meses.includes(mesSelecionado))
-        .map((a) => a.nome)
+    ? alimentos.filter((a) => a.meses.includes(mesSelecionado)).map((a) => a.nome)
     : [];
 
   return (
-    <ScrollView style={styles.container}>
-      <Header />
-      <View style={styles.main}>
-        <Image
-          source={require("../../assets/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>Ingredientes da Época</Text>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView style={styles.container}>
 
-        <TouchableOpacity
-          style={styles.mesSelecionadoBox}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.mesSelecionadoText}>
-            {mesSelecionado
-              ? `Mês Selecionado: ${mesesNome[mesSelecionado - 1]}`
-              : "Selecionar Mês"}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.main}>
+          <Image
+            source={require("../../assets/logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
+          <Text style={styles.title}>Ingredientes da Época</Text>
+
+          <TouchableOpacity
+            style={styles.mesSelecionadoBox}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.mesSelecionadoText}>
+              {mesSelecionado
+                ? `Mês Selecionado: ${mesesNome[mesSelecionado - 1]}`
+                : "Selecionar Mês"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Ingredientes */}
+          <View style={styles.ingredientesContainer}>
+            {ingredientesDoMes.map((ingrediente) => (
+              <View style={styles.ingredienteTag} key={ingrediente}>
+                <Text style={styles.ingredienteText}>{ingrediente}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* Modal */}
         <Modal
           visible={modalVisible}
           transparent
-          animationType="fade"
+          animationType="slide"
           onRequestClose={() => setModalVisible(false)}
         >
           <TouchableOpacity
@@ -186,67 +198,68 @@ export default function IngredientesEpoca() {
             </View>
           </TouchableOpacity>
         </Modal>
-
-        <View style={styles.ingredientesContainer}>
-          {ingredientesDoMes.map((ingrediente) => (
-            <View style={styles.ingredienteTag} key={ingrediente}>
-              <Text
-                style={styles.ingredienteText}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.7}
-              >
-                {ingrediente}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#F9FAFB", // fundo mais claro (cinza suave)
+  },
   container: { flex: 1 },
   main: {
     alignItems: "center",
-    paddingTop: 20,
+    paddingTop: 25,
     paddingHorizontal: 16,
     gap: 20,
-    marginBottom: 140,
+    marginBottom: 100,
   },
-  logo: { width: 250, height: 250, marginBottom: 0 },
+  logo: { width: 200, height: 200 }, // menor que antes
   title: {
-    fontSize: 33,
+    fontSize: 24,
     fontWeight: "bold",
     color: "#22577A",
-    marginBottom: 20,
+    marginTop: 8,
   },
 
   mesSelecionadoBox: {
     backgroundColor: "#22577A",
-    borderRadius: 100,
+    borderRadius: 50,
     paddingVertical: 14,
-    paddingHorizontal: 24,
+    paddingHorizontal: 40,
     alignItems: "center",
-    marginBottom: 10,
+    marginTop: 16,
+    elevation: 3, // sombra no Android
+    shadowColor: "#000", // sombra no iOS
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
 
   modalOverlay: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.25)", // menos escuro
+    justifyContent: "flex-end", // faz o conteúdo colar embaixo
   },
   modalContent: {
     backgroundColor: "#fff",
-    borderRadius: 20,
-    width: "80%",
-    maxHeight: "50%",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    width: "100%",
+    maxHeight: "60%",
     paddingVertical: 10,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
   },
-  mesOption: { paddingVertical: 12, paddingHorizontal: 20 },
+  mesOption: { paddingVertical: 14, paddingHorizontal: 20 },
   mesOptionText: { fontSize: 16, color: "#22577A" },
 
   ingredientesContainer: {
@@ -254,26 +267,25 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
     marginTop: 20,
-    gap: 10,
+    gap: 12,
   },
   ingredienteTag: {
-    borderWidth: 1,
-    borderColor: "#22577A",
+    backgroundColor: "#E6F4F1", // cor suave ligada ao tema (#22577A mais claro)
     borderRadius: 20,
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     marginBottom: 10,
-    flexBasis: "30%",
-    maxWidth: "30%",
+    minWidth: 90,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 60,
-    alignSelf: "flex-start",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
   ingredienteText: {
-    fontSize: 18,
+    fontSize: 15,
     color: "#22577A",
-    fontWeight: "700",
-    textAlign: "center",
+    fontWeight: "500",
   },
 });
