@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, Text, View, Image, TouchableOpacity, Modal, FlatList } from "react-native";
-import Header from "../components/Header";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+  SafeAreaView,
+} from "react-native";
 
 interface Alimento {
   nome: string;
@@ -100,7 +109,21 @@ const alimentos: Alimento[] = [
   { nome: "Tomate-caqui", meses: [9] },
 ];
 
-const mesesNome = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const mesesNome = [
+  "Janeiro",
+  "Fevereiro",
+  "Março",
+  "Abril",
+  "Maio",
+  "Junho",
+  "Julho",
+  "Agosto",
+  "Setembro",
+  "Outubro",
+  "Novembro",
+  "Dezembro",
+];
+
 
 export default function IngredientesEpoca() {
   const [mesSelecionado, setMesSelecionado] = useState<number | null>(null);
@@ -111,26 +134,60 @@ export default function IngredientesEpoca() {
     : [];
 
   return (
-    <ScrollView style={styles.container}>
-      <Header />
-      <View style={styles.main}>
-        <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
-        <Text style={styles.title}>Ingredientes da Época</Text>
+    <SafeAreaView style={styles.safe}>
+      <ScrollView style={styles.container}>
+        <View style={styles.main}>
+          <Image
+            source={require("../../assets/logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
-        <TouchableOpacity style={styles.mesSelecionadoBox} onPress={() => setModalVisible(true)}>
-          <Text style={styles.mesSelecionadoText}>
-            {mesSelecionado ? `Mês Selecionado: ${mesesNome[mesSelecionado - 1]}` : "Selecionar Mês"}
-          </Text>
-        </TouchableOpacity>
+          <Text style={styles.title}>Ingredientes da Época</Text>
 
-        <Modal visible={modalVisible} transparent animationType="fade" onRequestClose={() => setModalVisible(false)}>
-          <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={() => setModalVisible(false)}>
+          <TouchableOpacity
+            style={styles.mesSelecionadoBox}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.mesSelecionadoText}>
+              {mesSelecionado
+                ? `Mês Selecionado: ${mesesNome[mesSelecionado - 1]}`
+                : "Selecionar Mês"}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.ingredientesContainer}>
+            {ingredientesDoMes.map((ingrediente) => (
+              <View style={styles.ingredienteTag} key={ingrediente}>
+                <Text style={styles.ingredienteText}>{ingrediente}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <TouchableOpacity
+            style={styles.modalOverlay}
+            activeOpacity={1}
+            onPressOut={() => setModalVisible(false)}
+          >
             <View style={styles.modalContent}>
               <FlatList
                 data={mesesNome}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={({ item, index }) => (
-                  <TouchableOpacity style={styles.mesOption} onPress={() => { setMesSelecionado(index + 1); setModalVisible(false); }}>
+                  <TouchableOpacity
+                    style={styles.mesOption}
+                    onPress={() => {
+                      setMesSelecionado(index + 1);
+                      setModalVisible(false);
+                    }}
+                  >
                     <Text style={styles.mesOptionText}>{item}</Text>
                   </TouchableOpacity>
                 )}
@@ -138,41 +195,91 @@ export default function IngredientesEpoca() {
             </View>
           </TouchableOpacity>
         </Modal>
-
-        <View style={styles.ingredientesContainer}>
-          {ingredientesDoMes.map((ingrediente) => (
-            <View style={styles.ingredienteTag} key={ingrediente}>
-              <Text
-                style={styles.ingredienteText}
-                numberOfLines={1}
-                adjustsFontSizeToFit
-                minimumFontScale={0.7}
-              >
-                {ingrediente}
-              </Text>
-            </View>
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+  },
   container: { flex: 1 },
-  main: { alignItems: "center", paddingTop: 20, paddingHorizontal: 16, gap: 20 },
-  logo: { width: 250, height: 250, marginBottom: 0 },
-  title: { fontSize: 33, fontWeight: "bold", color: "#22577A", marginBottom: 20 },
-
-  mesSelecionadoBox: { backgroundColor: "#22577A", borderRadius: 100, paddingVertical: 14, paddingHorizontal: 24, alignItems: "center", marginBottom: 10 },
+  main: {
+    alignItems: "center",
+    paddingTop: 25,
+    paddingHorizontal: 16,
+    gap: 20,
+    marginBottom: 100,
+  },
+  logo: { width: 200, height: 200 },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#22577A",
+    marginTop: 8,
+  },
+  mesSelecionadoBox: {
+    backgroundColor: "#22577A",
+    borderRadius: 50,
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    alignItems: "center",
+    marginTop: 16,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
   mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.3)", justifyContent: "center", alignItems: "center" },
-  modalContent: { backgroundColor: "#fff", borderRadius: 20, width: "80%", maxHeight: "50%", paddingVertical: 10 },
-  mesOption: { paddingVertical: 12, paddingHorizontal: 20 },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    width: "100%",
+    maxHeight: "60%",
+    paddingVertical: 10,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+  },
+  mesOption: { paddingVertical: 14, paddingHorizontal: 20 },
   mesOptionText: { fontSize: 16, color: "#22577A" },
-
-  ingredientesContainer: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", marginTop: 20, gap: 10 },
-  ingredienteTag: { borderWidth: 1, borderColor: "#22577A", borderRadius: 20, paddingHorizontal: 14, paddingVertical: 10, marginBottom: 10, flexBasis: "30%", maxWidth: "30%", alignItems: "center", justifyContent: "center", minHeight: 60, alignSelf: "flex-start" },
-  ingredienteText: { fontSize: 18, color: "#22577A", fontWeight: "700", textAlign: "center" },
+  ingredientesContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    marginTop: 20,
+    gap: 12,
+  },
+  ingredienteTag: {
+    backgroundColor: "#E6F4F1",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginBottom: 10,
+    minWidth: 90,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  ingredienteText: {
+    fontSize: 15,
+    color: "#22577A",
+    fontWeight: "500",
+  },
 });
