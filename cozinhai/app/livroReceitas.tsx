@@ -37,7 +37,7 @@ import BookmarkButton from "../components/BookmarkButton"
             <>
                 <ScrollView style={styles.container}>
                     <Image source={require("../assets/logo.png")} style={styles.mainLogo} />
-                    <Text style={styles.tituloPagina}><FontAwesome name="bookmark" />Livro de receitas</Text>
+                    <Text style={styles.tituloPagina}>Livro de receitas</Text>
                     {
                         receitasDemo.map((receita) => (
                             <View style={styles.row} key={receita.id}>
