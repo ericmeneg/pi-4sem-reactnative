@@ -1,8 +1,9 @@
     import { IRecipe } from "../interfaces/recipe.interface"
     import RecipeCard from "../components/RecipeCard"
-    import { ScrollView, Image, StyleSheet } from "react-native"
+    import { ScrollView, Image, StyleSheet, View } from "react-native"
     import { Button, Text } from 'react-native-paper'
     import { FontAwesome } from "@expo/vector-icons"
+import BookmarkButton from "../components/BookmarkButton"
 
     export default function LivroReceitas() {
         let receitasDemo: IRecipe[] = [{
@@ -39,12 +40,11 @@
                     <Text style={styles.tituloPagina}><FontAwesome name="bookmark" />Livro de receitas</Text>
                     {
                         receitasDemo.map((receita) => (
-                            <>
+                            <View style={styles.row} key={receita.id}>
                             <RecipeCard
-                                key={receita.id}
                                 recipe={receita} />
-                            <Button><FontAwesome name="bookmark" /></Button>
-                            </>
+                            <BookmarkButton size={48}/>
+                            </View>
                         ))
                     }
                 </ScrollView>
@@ -84,5 +84,12 @@ const styles = StyleSheet.create({
 
   bookmarkButton: {
     fontSize: 50,
+  },
+
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20
   }
 })
