@@ -26,7 +26,7 @@ export default function Layout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Início",
+          title: "",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="home" size={28} color={color} />
           ),
@@ -36,7 +36,7 @@ export default function Layout() {
       <Tabs.Screen
         name="pesquisarReceitas"
         options={{
-          title: "Pesquisar",
+          title: "",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="magnify" size={30} color={color} />
           ),
@@ -46,7 +46,7 @@ export default function Layout() {
       <Tabs.Screen
         name="ingredientesEpoca"
         options={{
-          title: "Ingredientes época",
+          title: "",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="food-apple" size={30} color={color} />
           ),
@@ -56,7 +56,7 @@ export default function Layout() {
       <Tabs.Screen
         name="perfil"
         options={{
-          title: "Perfil",
+          title: "",
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="account" size={30} color={color} />
           ),
