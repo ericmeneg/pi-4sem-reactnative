@@ -18,6 +18,7 @@ import RecipeCard from "../../components/RecipeCard";
 import { themeContext } from "../../context/ThemeContext";
 import Footer from "../../components/Footer";
 import { spoonacularService } from "../../services/spoonacularService";
+import { globalStyles } from "../../styles/globalStyles";
 
 // Adaptada para que a API retorna
 interface Recipe {
@@ -99,7 +100,7 @@ export default function PesquisarReceitas() {
         <View style={styles.mainContent}>
           <Image
             source={require("../../assets/logo.png")}
-            style={styles.mainImage}
+            style={globalStyles.logo}
             resizeMode="contain"
           />
 
@@ -247,13 +248,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     gap: 20,
+    alignItems: "center",
   },
-  mainImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 10,
-    alignSelf: "center",
-  },
+
   title: {
     fontSize: 30,
     fontWeight: "bold",

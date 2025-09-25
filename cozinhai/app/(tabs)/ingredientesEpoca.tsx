@@ -10,6 +10,7 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
+import { globalStyles } from "../../styles/globalStyles";
 
 interface Alimento {
   nome: string;
@@ -124,22 +125,23 @@ const mesesNome = [
   "Dezembro",
 ];
 
-
 export default function IngredientesEpoca() {
   const [mesSelecionado, setMesSelecionado] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
 
   const ingredientesDoMes = mesSelecionado
-    ? alimentos.filter((a) => a.meses.includes(mesSelecionado)).map((a) => a.nome)
+    ? alimentos
+        .filter((a) => a.meses.includes(mesSelecionado))
+        .map((a) => a.nome)
     : [];
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView style={styles.container}>
-        <View style={styles.main}>
+      <ScrollView>
+        <View style={globalStyles.container}>
           <Image
             source={require("../../assets/logo.png")}
-            style={styles.logo}
+            style={globalStyles.logo}
             resizeMode="contain"
           />
 
@@ -205,15 +207,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F9FAFB",
   },
-  container: { flex: 1 },
-  main: {
-    alignItems: "center",
-    paddingTop: 25,
-    paddingHorizontal: 16,
-    gap: 20,
-    marginBottom: 100,
-  },
-  logo: { width: 200, height: 200 },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",

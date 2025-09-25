@@ -10,14 +10,11 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { themeContext } from "../../context/ThemeContext";
 import { Divider } from "react-native-paper";
+import { globalStyles } from "../../styles/globalStyles";
 
 export default function Perfil() {
   const { colors } = useContext(themeContext);
   const styles = StyleSheet.create({
-    logo: { width: 200, height: 200 },
-
-    container: { flex: 1 },
-
     safeArea: {
       flex: 1,
       backgroundColor: "#fff",
@@ -48,10 +45,10 @@ export default function Perfil() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
+        <View style={globalStyles.container}>
           <Image
             source={require("../../assets/logo.png")}
-            style={styles.logo}
+            style={globalStyles.logo}
             resizeMode="contain"
             testID="logo"
           />
