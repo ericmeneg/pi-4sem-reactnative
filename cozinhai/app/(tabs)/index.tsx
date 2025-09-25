@@ -1,6 +1,7 @@
 /* import { Link } from "expo-router"; */
 import { Image, ScrollView, Text, View } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
+import DailyRecipes from "../../components/DailyRecipes";
 
 export default function Home() {
   return (
@@ -18,6 +19,8 @@ export default function Home() {
           style={globalStyles.logo}
           resizeMode="contain"
         />
+
+        <DailyRecipes />
       </View>
     </ScrollView>
   );
