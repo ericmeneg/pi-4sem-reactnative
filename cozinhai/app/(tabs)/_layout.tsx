@@ -21,6 +21,7 @@ export default function Layout() {
           /*borderColor: colors.darkBlue, */
           paddingTop: 15,
         },
+        headerShown: false,
       }}
     >
       <Tabs.Screen

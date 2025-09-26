@@ -8,9 +8,10 @@ import {
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useContext } from "react";
-import { themeContext } from "../../context/ThemeContext";
+import { themeContext } from "../../../context/ThemeContext";
 import { Divider } from "react-native-paper";
-import { globalStyles } from "../../styles/globalStyles";
+import { globalStyles } from "../../../styles/globalStyles";
+import { Link } from "expo-router";
 
 export default function Perfil() {
   const { colors } = useContext(themeContext);
@@ -34,6 +35,7 @@ export default function Perfil() {
     },
 
     userOption: {
+      display: "flex",
       flexDirection: "row",
       alignItems: "center",
       gap: 18,
@@ -47,7 +49,7 @@ export default function Perfil() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={globalStyles.container}>
           <Image
-            source={require("../../assets/logo.png")}
+            source={require("../../../assets/logo.png")}
             style={globalStyles.logo}
             resizeMode="contain"
             testID="logo"
@@ -65,7 +67,11 @@ export default function Perfil() {
             </View>
 
             <View testID="userOptions">
-              <View testID="alterarSenha" style={styles.userOption}>
+              <Link
+                href="/(tabs)/perfil/alterarSenha"
+                testID="alterarSenha"
+                style={styles.userOption}
+              >
                 <MaterialCommunityIcons
                   name="key-variant"
                   color={colors.darkBlue}
@@ -74,7 +80,7 @@ export default function Perfil() {
                 <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
                   Alterar Senha
                 </Text>
-              </View>
+              </Link>
 
               <Divider
                 style={{
@@ -84,7 +90,11 @@ export default function Perfil() {
                 }}
               />
 
-              <View testID="verComentarios" style={styles.userOption}>
+              <Link
+                href="/(tabs)/perfil/verComentarios"
+                testID="verComentarios"
+                style={styles.userOption}
+              >
                 <MaterialCommunityIcons
                   name="comment-text"
                   color={colors.darkBlue}
@@ -93,7 +103,7 @@ export default function Perfil() {
                 <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
                   Ver Seus Comentários
                 </Text>
-              </View>
+              </Link>
 
               <Divider
                 style={{
@@ -103,7 +113,11 @@ export default function Perfil() {
                 }}
               />
 
-              <View testID="receitasSalvas" style={styles.userOption}>
+              <Link
+                href="/(tabs)/perfil/livroReceitas"
+                testID="receitasSalvas"
+                style={styles.userOption}
+              >
                 <MaterialCommunityIcons
                   name="book"
                   color={colors.darkBlue}
@@ -112,7 +126,7 @@ export default function Perfil() {
                 <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
                   Ver Receitas Salvas
                 </Text>
-              </View>
+              </Link>
 
               <Divider
                 style={{
