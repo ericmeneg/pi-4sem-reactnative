@@ -1,10 +1,11 @@
 import { ScrollView, Text, View } from "react-native";
+import VoltarHeader from "../../../components/VoltarHeader";
 
 export default function sairDaConta() {
   return (
     <ScrollView>
       <View>
-        <Text>Página pra sair da conta</Text>
+        <VoltarHeader />
       </View>
     </ScrollView>
   );

@@ -1,10 +1,12 @@
-import { ScrollView, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { globalStyles } from "../../../styles/globalStyles";
+import VoltarHeader from "../../../components/VoltarHeader";
 
 export default function alterarSenha() {
   return (
     <ScrollView>
-      <View>
-        <Text>Página de alterar senha</Text>
+      <View style={[globalStyles.container, { alignItems: "flex-start" }]}>
+        <VoltarHeader />
       </View>
     </ScrollView>
   );

@@ -1,10 +1,11 @@
 import { ScrollView, Text, View } from "react-native";
+import VoltarHeader from "../../../components/VoltarHeader";
 
 export default function verComentarios() {
   return (
     <ScrollView>
       <View>
-        <Text>Página para ver comentários</Text>
+        <VoltarHeader />
       </View>
     </ScrollView>
   );

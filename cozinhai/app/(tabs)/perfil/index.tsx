@@ -1,5 +1,6 @@
 import {
   Image,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -39,8 +40,14 @@ export default function Perfil() {
       flexDirection: "row",
       alignItems: "center",
       gap: 18,
-      justifyContent: "flex-start",
+      justifyContent: "center",
       padding: 10,
+    },
+
+    userOptionText: {
+      color: colors.darkBlue,
+      fontWeight: "bold",
+      fontSize: 20,
     },
   });
 
@@ -59,27 +66,36 @@ export default function Perfil() {
             <View testID="accountTitleContent" style={styles.accountTitle}>
               <MaterialCommunityIcons
                 name="account-circle-outline"
-                size={30}
+                size={40}
                 color={colors.darkBlue}
               />
 
-              <Text style={{ color: colors.darkBlue }}>Maria</Text>
+              <Text
+                style={{
+                  color: colors.darkBlue,
+                  fontSize: 25,
+                  textDecorationLine: "underline",
+                  fontWeight: "500",
+                }}
+              >
+                Maria
+              </Text>
             </View>
 
             <View testID="userOptions">
               <Link
                 href="/(tabs)/perfil/alterarSenha"
                 testID="alterarSenha"
-                style={styles.userOption}
+                asChild
               >
-                <MaterialCommunityIcons
-                  name="key-variant"
-                  color={colors.darkBlue}
-                  size={25}
-                />
-                <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
-                  Alterar Senha
-                </Text>
+                <Pressable style={styles.userOption}>
+                  <MaterialCommunityIcons
+                    name="key-variant"
+                    color={colors.darkBlue}
+                    size={35}
+                  />
+                  <Text style={styles.userOptionText}>Alterar Senha</Text>
+                </Pressable>
               </Link>
 
               <Divider
@@ -93,16 +109,18 @@ export default function Perfil() {
               <Link
                 href="/(tabs)/perfil/verComentarios"
                 testID="verComentarios"
-                style={styles.userOption}
+                asChild
               >
-                <MaterialCommunityIcons
-                  name="comment-text"
-                  color={colors.darkBlue}
-                  size={25}
-                />
-                <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
-                  Ver Seus Comentários
-                </Text>
+                <Pressable style={styles.userOption}>
+                  <MaterialCommunityIcons
+                    name="comment-text"
+                    color={colors.darkBlue}
+                    size={35}
+                  />
+                  <Text style={styles.userOptionText}>
+                    Ver Seus Comentários
+                  </Text>
+                </Pressable>
               </Link>
 
               <Divider
@@ -116,16 +134,16 @@ export default function Perfil() {
               <Link
                 href="/(tabs)/perfil/livroReceitas"
                 testID="receitasSalvas"
-                style={styles.userOption}
+                asChild
               >
-                <MaterialCommunityIcons
-                  name="book"
-                  color={colors.darkBlue}
-                  size={25}
-                />
-                <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
-                  Ver Receitas Salvas
-                </Text>
+                <Pressable style={styles.userOption}>
+                  <MaterialCommunityIcons
+                    name="book"
+                    color={colors.darkBlue}
+                    size={35}
+                  />
+                  <Text style={styles.userOptionText}>Ver Receitas Salvas</Text>
+                </Pressable>
               </Link>
 
               <Divider
@@ -136,16 +154,16 @@ export default function Perfil() {
                 }}
               />
 
-              <View testID="sair" style={styles.userOption}>
-                <MaterialCommunityIcons
-                  name="exit-to-app"
-                  color={colors.darkBlue}
-                  size={25}
-                />
-                <Text style={{ color: colors.darkBlue, fontWeight: "bold" }}>
-                  Sair
-                </Text>
-              </View>
+              <Link href="/(tabs)/perfil/sairDaConta" testID="sair" asChild>
+                <Pressable style={styles.userOption}>
+                  <MaterialCommunityIcons
+                    name="exit-to-app"
+                    color={colors.darkBlue}
+                    size={35}
+                  />
+                  <Text style={styles.userOptionText}>Sair</Text>
+                </Pressable>
+              </Link>
             </View>
           </View>
         </View>

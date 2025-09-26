@@ -4,6 +4,10 @@ import { ScrollView, Image, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
 import BookmarkButton from "../../../components/BookmarkButton";
+import VoltarHeader from "../../../components/VoltarHeader";
+import { useContext } from "react";
+import { themeContext } from "../../../context/ThemeContext";
+import { globalStyles } from "../../../styles/globalStyles";
 
 export default function LivroReceitas() {
   let receitasDemo: IRecipe[] = [
@@ -39,13 +43,53 @@ export default function LivroReceitas() {
     },
   ];
 
+  const { colors } = useContext(themeContext);
+  const styles = StyleSheet.create({
+    mainLogo: {
+      width: 210,
+      height: 50,
+      alignSelf: "center",
+      marginTop: 60,
+      marginBottom: 20,
+    },
+
+    main: {
+      flex: 1,
+      alignItems: "center",
+      flexDirection: "column",
+      gap: 130,
+      paddingTop: 100,
+      paddingBottom: 70,
+    },
+
+    tituloPagina: {
+      color: colors.darkBlue,
+      textAlign: "center",
+      marginBottom: 20,
+      fontSize: 30,
+      fontWeight: "bold",
+    },
+
+    bookmarkButton: {
+      fontSize: 50,
+    },
+
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      marginBottom: 20,
+    },
+  });
+
   return (
-    <>
-      <ScrollView style={styles.container}>
-        <Image
+    <ScrollView>
+      <View style={globalStyles.container}>
+        <VoltarHeader />
+        {/*         <Image
           source={require("../../../assets/logo.png")}
           style={styles.mainLogo}
-        />
+        /> */}
         <Text style={styles.tituloPagina}>Livro de receitas</Text>
         {receitasDemo.map((receita) => (
           <View style={styles.row} key={receita.id}>
@@ -53,49 +97,7 @@ export default function LivroReceitas() {
             <BookmarkButton size={48} />
           </View>
         ))}
-      </ScrollView>
-    </>
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 120,
-  },
-
-  mainLogo: {
-    width: 210,
-    height: 50,
-    alignSelf: "center",
-    marginTop: 60,
-    marginBottom: 20,
-  },
-
-  main: {
-    flex: 1,
-    alignItems: "center",
-    flexDirection: "column",
-    gap: 130,
-    paddingTop: 100,
-    paddingBottom: 70,
-  },
-
-  tituloPagina: {
-    color: "black",
-    textAlign: "center",
-    marginBottom: 20,
-    fontSize: 50,
-  },
-
-  bookmarkButton: {
-    fontSize: 50,
-  },
-
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 20,
-  },
-});
