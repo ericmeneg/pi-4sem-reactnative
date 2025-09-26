@@ -43,7 +43,6 @@ import BookmarkButton from "../components/BookmarkButton"
                             <View style={styles.row} key={receita.id}>
                             <RecipeCard
                                 recipe={receita} />
-                            <BookmarkButton size={48}/>
                             </View>
                         ))
                     }
@@ -56,6 +55,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     gap: 120,
+    padding: 30
   },
 
   mainLogo: {
