@@ -10,6 +10,7 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
+import Logo from "../../components/Logo";
 
 interface Alimento {
   nome: string;
@@ -137,11 +138,7 @@ export default function IngredientesEpoca() {
     <SafeAreaView style={styles.safe}>
       <ScrollView style={styles.container}>
         <View style={styles.main}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+        <Logo/> 
 
           <Text style={styles.title}>Ingredientes da Época</Text>
 

@@ -18,6 +18,7 @@ import RecipeCard from "../../components/RecipeCard";
 import { themeContext } from "../../context/ThemeContext";
 import Footer from "../../components/Footer";
 import { spoonacularService } from "../../services/spoonacularService";
+import Logo from "../../components/Logo";
 
 // Adaptada para que a API retorna
 interface Recipe {
@@ -97,11 +98,7 @@ export default function PesquisarReceitas() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.scrollViewContent}>
         <View style={styles.mainContent}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={styles.mainImage}
-            resizeMode="contain"
-          />
+        <Logo/> 
 
           <Text style={[styles.title, { color: colors.darkBlue }]}>
             Pesquisar Receitas

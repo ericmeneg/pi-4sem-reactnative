@@ -4,6 +4,7 @@
     import { Button, Text } from 'react-native-paper'
     import { FontAwesome } from "@expo/vector-icons"
 import BookmarkButton from "../components/BookmarkButton"
+import Logo from "../components/Logo"
 
     export default function LivroReceitas() {
         let receitasDemo: IRecipe[] = [{
@@ -36,7 +37,7 @@ import BookmarkButton from "../components/BookmarkButton"
         return (
             <>
                 <ScrollView style={styles.container}>
-                    <Image source={require("../assets/logo.png")} style={styles.mainLogo} />
+                    <Logo/> 
                     <Text style={styles.tituloPagina}>Livro de receitas</Text>
                     {
                         receitasDemo.map((receita) => (

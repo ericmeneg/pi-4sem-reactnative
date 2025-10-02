@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { FontAwesome, AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import Logo from "../components/Logo";
 
 // Dados de receitas de exemplo para mostrar o layout
 const DUMMY_RECIPES = [
@@ -102,11 +103,7 @@ export default function PesquisarReceitas() {
     <SafeAreaView style={styles.safeArea}>
       {/* Cabeçalho */}
       <View style={styles.header}>
-        <Image
-          source={require("../assets/logo.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Logo/> 
       </View>
 
       {/* Conteúdo Principal */}
@@ -249,15 +246,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  logo: {
-    width: 175.71,
-    height: 39.16,
-  },
   scrollViewContent: {
     flex: 1,
   },
   mainContent: {
-    padding: 20,
+    padding: 81,
     alignItems: "center",
   },
   searchBarContainer: {

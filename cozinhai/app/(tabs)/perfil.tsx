@@ -10,6 +10,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useContext } from "react";
 import { themeContext } from "../../context/ThemeContext";
 import { Divider } from "react-native-paper";
+import Logo from "../../components/Logo";
 
 export default function Perfil() {
   const { colors } = useContext(themeContext);
@@ -49,12 +50,7 @@ export default function Perfil() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={styles.logo}
-            resizeMode="contain"
-            testID="logo"
-          />
+        <Logo/> 
 
           <View testID="userSection" style={styles.userSection}>
             <View testID="accountTitleContent" style={styles.accountTitle}>
