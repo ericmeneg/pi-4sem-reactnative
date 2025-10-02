@@ -14,13 +14,13 @@ export default function Layout() {
         tabBarLabelPosition: "below-icon",
         tabBarStyle: {
           backgroundColor: colors.darkBlue,
-          position: "absolute",
           height: 100,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           /*borderColor: colors.darkBlue, */
           paddingTop: 15,
         },
+        headerShown: false,
       }}
     >
       <Tabs.Screen
