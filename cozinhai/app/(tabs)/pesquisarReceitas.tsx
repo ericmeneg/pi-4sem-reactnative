@@ -223,10 +223,6 @@ export default function PesquisarReceitas() {
             )}
           </View>
         )}
-
-        <View style={{ width: "100%" }}>
-          <Footer />
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
