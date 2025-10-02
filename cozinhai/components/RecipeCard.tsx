@@ -21,7 +21,7 @@ export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
             <Card.Cover source={{ uri: recipe.image }} />
             <Card.Content>
                 <Text variant="titleMedium" style={styles.title}>
-                    {recipe.title} <BookmarkButton size={24}/>
+                    {recipe.title} {"\n"} <BookmarkButton size={30}/>
                 </Text>
             </Card.Content>
         </Card>
