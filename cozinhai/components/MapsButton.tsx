@@ -8,7 +8,7 @@ interface INavigateButtonProps {
 
 export default function NavigateButton({ title, onPress }: INavigateButtonProps) {
     return (
-        <Button mode="contained" onPress={onPress}>
+        <Button buttonColor="#22577A" mode="contained" onPress={onPress}>
             {title}
         </Button>
     );
