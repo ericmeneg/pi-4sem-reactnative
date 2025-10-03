@@ -1,7 +1,9 @@
 /* import { Link } from "expo-router"; */
-import { Image, ScrollView, Text, View } from "react-native";
-import { globalStyles } from "../../styles/globalStyles";
+import { Image, ScrollView, StyleSheet, View } from "react-native";
 import DailyRecipes from "../../components/DailyRecipes";
+import { useContext } from "react";
+import { themeContext } from "../../context/ThemeContext";
+import { globalStyles } from "../../styles/globalStyles";
 
 export default function Home() {
   const { colors } = useContext(themeContext);
