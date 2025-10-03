@@ -1,11 +1,13 @@
 import { StyleSheet } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import { IRecipe } from "../interfaces/recipe.interface";
+import { useContext } from "react";
+import { themeContext } from "../context/ThemeContext";
 import BookmarkButton from "./BookmarkButton";
 
 interface RecipeCardProps {
-    recipe: IRecipe;
-    onPress?: (recipe: IRecipe) => void; // Adicione esta linha
+  recipe: IRecipe;
+  onPress?: (recipe: IRecipe) => void; // Adicione esta linha
 }
 
 export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
@@ -28,16 +30,38 @@ export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
     );
 }
 
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
     card: {
-        marginVertical: 10,
-        borderRadius: 12,
-        alignSelf: "center",
-        width: "90%",
-        maxWidth: 400
+      marginVertical: 10,
+      borderRadius: 12,
+      alignItems: "center",
+      width: "90%",
+      maxWidth: 350,
+      backgroundColor: "transparent",
+      borderColor: colors.darkBlue,
+      borderWidth: 2,
+      padding: 20,
     },
+
+    cardContent: {
+      gap: 20,
+    },
+
     title: {
-        marginTop: 10,
-        textAlign: "center"
-    }
-});
+      textAlign: "center",
+      color: colors.darkBlue,
+      fontWeight: "bold",
+    },
+  });
+
+  return (
+    <Card style={styles.card}>
+      <Card.Content style={styles.cardContent}>
+        <Card.Cover source={{ uri: recipe.image }} />
+        <Text variant="titleMedium" testID="recipeTitle" style={styles.title}>
+          {recipe.title}
+        </Text>
+      </Card.Content>
+    </Card>
+  );
+}

@@ -10,4 +10,11 @@ export const themeContext = createContext({
     primary: "#007BFF",
     inactiveIcon: "#072031",
   },
+
+  logoStyle: {
+    logo: {
+      width: 200,
+      height: 200,
+    },
+  },
 });

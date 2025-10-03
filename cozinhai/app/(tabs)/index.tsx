@@ -1,67 +1,31 @@
-import React, { useContext } from 'react';
-import { StyleSheet, ScrollView, View, TouchableOpacity } from 'react-native';
-import { Text } from 'react-native-paper'; 
-import DailyRecipes from '../../components/DailyRecipes';
-import FeatureCard from '../../components/FeatureCard';
-import { themeContext } from '../../context/ThemeContext'; 
-import Logo from '../../components/Logo';
-
-
+/* import { Link } from "expo-router"; */
+import { Image, ScrollView, StyleSheet, View } from "react-native";
+import DailyRecipes from "../../components/DailyRecipes";
+import { useContext } from "react";
+import { themeContext } from "../../context/ThemeContext";
+import { globalStyles } from "../../styles/globalStyles";
 
 export default function Home() {
   const { colors } = useContext(themeContext);
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: colors.headerBackground }]}>
-      
-      {/* 1. Título de Boas-vindas (Limpo e no topo) */}
-      <View style={styles.header}>
-        <Logo />
-        <Text variant="headlineMedium" style={[styles.mainTitle, { color: colors.darkBlue }]}>
-          O que vamos cozinhar hoje?
-        </Text>
-        <Text style={[styles.subTitle, { color: colors.secondaryText }]}>
-          Encontre inspiração e comece a preparar sua próxima refeição.
-        </Text>
-      </View>
+    <ScrollView>
+      <View style={globalStyles.container}>
+        {/* <Text>Você está no index.tsx</Text>
+      <Link href="/receita">Ir para receitas</Link>
+      <Link href="/ingredientesEpoca">Ir para ingrediente sazonais</Link>
+      <Link href="../pesquisarReceitas">Ir para pesquisa de receitas</Link>
+      <Link href="/playground">Ir para exemplos de componente</Link>
+      <Link href={"/livroReceitas"}>Ir para livro de receitas</Link> */}
 
-      
-      
-      {/* 3. Cartões de Atalho Principais (2x2 Grid) */}
-      <Text variant="titleLarge" style={[styles.shortcutsTitle, { color: colors.darkBlue }]}>
-        Acessos Rápidos
-      </Text>
-      <View style={styles.shortcutsContainer}>
-        <FeatureCard 
-          title="Ingredientes da Época" 
-          iconName="food-apple-outline" 
-          route="/ingredientesEpoca" 
+        <Image
+          source={require("../../assets/logo.png")}
+          style={globalStyles.logo}
+          resizeMode="contain"
         />
-        <FeatureCard 
-          title="Livro de Receitas" 
-          iconName="bookmark-multiple-outline" 
-          route="/receitasSalvas" 
-        />
-        <FeatureCard 
-          title="Pesquisar por Ingredientes" 
-          iconName="fridge-outline" 
-          route="/pesquisarPorIngredientes" 
-        />
-        <FeatureCard 
-          title="Meu Perfil" 
-          iconName="account-circle-outline" 
-          route="/perfil" 
-        />
-      </View>
 
-      {/* 4. Receitas Diárias */}
-      <Text variant="titleLarge" style={[styles.dailyTitle, { color: colors.darkBlue }]}>
-        Recomendações Diárias
-      </Text>
-      <DailyRecipes />
-      
-      {/* Espaço para o tab bar não sobrepor */}
-      <View style={{ height: 120 }} /> 
+        <DailyRecipes />
+      </View>
     </ScrollView>
   );
 }
