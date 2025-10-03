@@ -3,14 +3,32 @@ import { Card, Text } from "react-native-paper";
 import { IRecipe } from "../interfaces/recipe.interface";
 import { useContext } from "react";
 import { themeContext } from "../context/ThemeContext";
+import BookmarkButton from "./BookmarkButton";
 
 interface RecipeCardProps {
   recipe: IRecipe;
   onPress?: (recipe: IRecipe) => void; // Adicione esta linha
 }
 
-export default function RecipeCard({ recipe }: RecipeCardProps) {
-  const { colors } = useContext(themeContext);
+export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
+    const handlePress = () => {
+        if (onPress) {
+            onPress(recipe);
+        } else {
+        }
+    };
+
+    return (
+        <Card onPress={()=>{}} mode="elevated" elevation={5} style={styles.card}>
+            <Card.Cover source={{ uri: recipe.image }} />
+            <Card.Content>
+                <Text variant="titleMedium" style={styles.title}>
+                    {recipe.title} {"\n"} <BookmarkButton size={30}/>
+                </Text>
+            </Card.Content>
+        </Card>
+    );
+}
 
   const styles = StyleSheet.create({
     card: {

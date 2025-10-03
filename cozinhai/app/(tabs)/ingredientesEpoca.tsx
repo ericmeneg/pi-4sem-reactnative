@@ -11,6 +11,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { globalStyles } from "../../styles/globalStyles";
+import Logo from "../../components/Logo";
 
 interface Alimento {
   nome: string;
@@ -137,13 +138,9 @@ export default function IngredientesEpoca() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView>
-        <View style={globalStyles.container}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={globalStyles.logo}
-            resizeMode="contain"
-          />
+      <ScrollView style={styles.container}>
+        <View style={styles.main}>
+        <Logo/> 
 
           <Text style={styles.title}>Ingredientes da Época</Text>
 
