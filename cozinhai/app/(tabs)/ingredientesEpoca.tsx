@@ -200,6 +200,20 @@ export default function IngredientesEpoca() {
 }
 
 const styles = StyleSheet.create({
+  container: {flex: 1},
+   main: {
+
+    alignItems: "center",
+
+    paddingTop: 25,
+
+    paddingHorizontal: 16,
+
+    gap: 20,
+
+    marginBottom: 100,
+
+  },
   safe: {
     flex: 1,
     backgroundColor: "#F9FAFB",
