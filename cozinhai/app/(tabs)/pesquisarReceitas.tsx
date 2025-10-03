@@ -44,8 +44,6 @@ export default function PesquisarReceitas() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const { colors } = useContext(themeContext);
-
   const toggleFilter = (key: keyof typeof filters) => () => {
     setFilters((prev) => ({ ...prev, [key]: !prev[key] }));
   };
@@ -229,6 +227,8 @@ export default function PesquisarReceitas() {
   );
 }
 
+ const { colors } = useContext(themeContext);
+
   const styles = StyleSheet.create({
     safeArea: {
       flex: 1,
@@ -341,151 +341,151 @@ export default function PesquisarReceitas() {
     },
   });
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView style={styles.scrollViewContent}>
-        <View style={styles.mainContent}>
-          <Image
-            source={require("../../assets/logo.png")}
-            style={globalStyles.logo}
-            resizeMode="contain"
-          />
+//   return (
+//     <SafeAreaView style={styles.safeArea}>
+//       <ScrollView style={styles.scrollViewContent}>
+//         <View style={styles.mainContent}>
+//           <Image
+//             source={require("../../assets/logo.png")}
+//             style={globalStyles.logo}
+//             resizeMode="contain"
+//           />
 
-          <Text style={styles.title}>Pesquisar Receitas</Text>
+//           <Text style={styles.title}>Pesquisar Receitas</Text>
 
-          <View style={styles.inputContent} testID="headerContent">
-            <TextInput
-              placeholder="Busque suas receitas"
-              style={[styles.input, { borderColor: colors.darkBlue }]}
-              placeholderTextColor={"rgb(34, 87, 122, 38%)"}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearch}
-              returnKeyType="search"
-              editable={!isLoading}
-            />
-            <Pressable
-              onPress={handleSearch}
-              disabled={isLoading}
-              style={[
-                styles.searchButton,
-                isLoading && styles.searchButtonDisabled,
-              ]}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color={colors.darkBlue} />
-              ) : (
-                <FontAwesome name="search" size={20} color={colors.darkBlue} />
-              )}
-            </Pressable>
-          </View>
+//           <View style={styles.inputContent} testID="headerContent">
+//             <TextInput
+//               placeholder="Busque suas receitas"
+//               style={[styles.input, { borderColor: colors.darkBlue }]}
+//               placeholderTextColor={"rgb(34, 87, 122, 38%)"}
+//               value={searchQuery}
+//               onChangeText={setSearchQuery}
+//               onSubmitEditing={handleSearch}
+//               returnKeyType="search"
+//               editable={!isLoading}
+//             />
+//             <Pressable
+//               onPress={handleSearch}
+//               disabled={isLoading}
+//               style={[
+//                 styles.searchButton,
+//                 isLoading && styles.searchButtonDisabled,
+//               ]}
+//             >
+//               {isLoading ? (
+//                 <ActivityIndicator size="small" color={colors.darkBlue} />
+//               ) : (
+//                 <FontAwesome name="search" size={20} color={colors.darkBlue} />
+//               )}
+//             </Pressable>
+//           </View>
 
-          <Text style={[styles.subtitle, { color: colors.darkBlue }]}>
-            Filtros Avançados
-          </Text>
+//           <Text style={[styles.subtitle, { color: colors.darkBlue }]}>
+//             Filtros Avançados
+//           </Text>
 
-          <View style={styles.filters}>
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.vegan ? "checked" : "unchecked"}
-                onPress={toggleFilter("vegan")}
-                color={colors.darkBlue}
-                uncheckedColor={colors.secondaryText}
-              />
-              <Text style={styles.filterLabel} testID="filterLabel">
-                Vegano
-              </Text>
-            </View>
+//           <View style={styles.filters}>
+//             <View style={styles.filterItem}>
+//               <Checkbox.Android
+//                 status={filters.vegan ? "checked" : "unchecked"}
+//                 onPress={toggleFilter("vegan")}
+//                 color={colors.darkBlue}
+//                 uncheckedColor={colors.secondaryText}
+//               />
+//               <Text style={styles.filterLabel} testID="filterLabel">
+//                 Vegano
+//               </Text>
+//             </View>
 
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.vegetarian ? "checked" : "unchecked"}
-                onPress={toggleFilter("vegetarian")}
-                color={colors.darkBlue}
-                uncheckedColor={colors.secondaryText}
-              />
-              <Text style={styles.filterLabel} testID="filterLabel">
-                Vegetariano
-              </Text>
-            </View>
+//             <View style={styles.filterItem}>
+//               <Checkbox.Android
+//                 status={filters.vegetarian ? "checked" : "unchecked"}
+//                 onPress={toggleFilter("vegetarian")}
+//                 color={colors.darkBlue}
+//                 uncheckedColor={colors.secondaryText}
+//               />
+//               <Text style={styles.filterLabel} testID="filterLabel">
+//                 Vegetariano
+//               </Text>
+//             </View>
 
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.glutenFree ? "checked" : "unchecked"}
-                onPress={toggleFilter("glutenFree")}
-                color={colors.darkBlue}
-                uncheckedColor={colors.secondaryText}
-              />
-              <Text style={styles.filterLabel} testID="filterLabel">
-                Sem Glúten
-              </Text>
-            </View>
+//             <View style={styles.filterItem}>
+//               <Checkbox.Android
+//                 status={filters.glutenFree ? "checked" : "unchecked"}
+//                 onPress={toggleFilter("glutenFree")}
+//                 color={colors.darkBlue}
+//                 uncheckedColor={colors.secondaryText}
+//               />
+//               <Text style={styles.filterLabel} testID="filterLabel">
+//                 Sem Glúten
+//               </Text>
+//             </View>
 
-            <View style={styles.filterItem}>
-              <Checkbox.Android
-                status={filters.dairyFree ? "checked" : "unchecked"}
-                onPress={toggleFilter("dairyFree")}
-                color={colors.darkBlue}
-                uncheckedColor={colors.secondaryText}
-              />
-              <Text style={styles.filterLabel} testID="filterLabel">
-                Sem Lactose
-              </Text>
-            </View>
-          </View>
+//             <View style={styles.filterItem}>
+//               <Checkbox.Android
+//                 status={filters.dairyFree ? "checked" : "unchecked"}
+//                 onPress={toggleFilter("dairyFree")}
+//                 color={colors.darkBlue}
+//                 uncheckedColor={colors.secondaryText}
+//               />
+//               <Text style={styles.filterLabel} testID="filterLabel">
+//                 Sem Lactose
+//               </Text>
+//             </View>
+//           </View>
 
-          <Button
-            buttonColor={colors.darkBlue}
-            textColor={colors.headerBackground}
-            mode="contained"
-            onPress={() => console.log("Popular clicado")}
-          >
-            Pesquisar
-          </Button>
-        </View>
+//           <Button
+//             buttonColor={colors.darkBlue}
+//             textColor={colors.headerBackground}
+//             mode="contained"
+//             onPress={() => console.log("Popular clicado")}
+//           >
+//             Pesquisar
+//           </Button>
+//         </View>
 
-        {/* Exibe os resultados da pesquisa ou mensagem de estado */}
-        {(isLoading || hasSearched) && (
-          <View style={styles.searchResultsContainer}>
-            {isLoading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={[styles.loadingText, { color: colors.text }]}>
-                  Buscando receitas...
-                </Text>
-              </View>
-            ) : searchResults.length > 0 ? (
-              <FlatList
-                data={searchResults}
-                renderItem={renderRecipe}
-                keyExtractor={(item) => item.id.toString()}
-                numColumns={2}
-                columnWrapperStyle={styles.row}
-                contentContainerStyle={styles.listContainer}
-                showsVerticalScrollIndicator={false}
-              />
-            ) : (
-              hasSearched && (
-                <View style={styles.emptyContainer}>
-                  <Text
-                    style={[styles.emptyText, { color: colors.secondaryText }]}
-                  >
-                    Nenhuma receita encontrada.
-                  </Text>
-                  <Text
-                    style={[
-                      styles.emptySubtext,
-                      { color: colors.secondaryText },
-                    ]}
-                  >
-                    Tente buscar por outros ingredientes ou nomes de receitas.
-                  </Text>
-                </View>
-              )
-            )}
-          </View>
-        )}
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+//         {/* Exibe os resultados da pesquisa ou mensagem de estado */}
+//         {(isLoading || hasSearched) && (
+//           <View style={styles.searchResultsContainer}>
+//             {isLoading ? (
+//               <View style={styles.loadingContainer}>
+//                 <ActivityIndicator size="large" color={colors.primary} />
+//                 <Text style={[styles.loadingText, { color: colors.text }]}>
+//                   Buscando receitas...
+//                 </Text>
+//               </View>
+//             ) : searchResults.length > 0 ? (
+//               <FlatList
+//                 data={searchResults}
+//                 renderItem={renderRecipe}
+//                 keyExtractor={(item) => item.id.toString()}
+//                 numColumns={2}
+//                 columnWrapperStyle={styles.row}
+//                 contentContainerStyle={styles.listContainer}
+//                 showsVerticalScrollIndicator={false}
+//               />
+//             ) : (
+//               hasSearched && (
+//                 <View style={styles.emptyContainer}>
+//                   <Text
+//                     style={[styles.emptyText, { color: colors.secondaryText }]}
+//                   >
+//                     Nenhuma receita encontrada.
+//                   </Text>
+//                   <Text
+//                     style={[
+//                       styles.emptySubtext,
+//                       { color: colors.secondaryText },
+//                     ]}
+//                   >
+//                     Tente buscar por outros ingredientes ou nomes de receitas.
+//                   </Text>
+//                 </View>
+//               )
+//             )}
+//           </View>
+//         )}
+//       </ScrollView>
+//     </SafeAreaView>
+//   );
+// }

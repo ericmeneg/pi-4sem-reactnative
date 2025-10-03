@@ -30,6 +30,8 @@ export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
     );
 }
 
+const { colors } = useContext(themeContext)
+
   const styles = StyleSheet.create({
     card: {
       marginVertical: 10,
@@ -54,14 +56,15 @@ export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
     },
   });
 
-  return (
-    <Card style={styles.card}>
-      <Card.Content style={styles.cardContent}>
-        <Card.Cover source={{ uri: recipe.image }} />
-        <Text variant="titleMedium" testID="recipeTitle" style={styles.title}>
-          {recipe.title}
-        </Text>
-      </Card.Content>
-    </Card>
-  );
-}
+  // return (
+  //   <Card style={styles.card}>
+  //     <Card.Content style={styles.cardContent}>
+  //       <Card.Cover source={{ uri: recipe.image }} />
+  //       <Text variant="titleMedium" testID="recipeTitle" style={styles.title}>
+  //         {recipe.title}
+  //       </Text>
+  //     </Card.Content>
+  //   </Card>
+  // );
+  //}
+
