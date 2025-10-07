@@ -62,14 +62,6 @@ export default function LivroReceitas() {
       paddingBottom: 70,
     },
 
-    tituloPagina: {
-      color: colors.darkBlue,
-      textAlign: "center",
-      marginBottom: 20,
-      fontSize: 30,
-      fontWeight: "bold",
-    },
-
     bookmarkButton: {
       fontSize: 50,
     },
@@ -90,7 +82,7 @@ export default function LivroReceitas() {
           source={require("../../../assets/logo.png")}
           style={styles.mainLogo}
         /> */}
-        <Text style={styles.tituloPagina}>Livro de receitas</Text>
+        <Text style={globalStyles.tituloPagina}>Livro de receitas</Text>
         {receitasDemo.map((receita) => (
           <View style={styles.row} key={receita.id}>
             <RecipeCard recipe={receita} />

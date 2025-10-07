@@ -15,14 +15,11 @@ export default function Layout() {
 
         tabBarStyle: {
           backgroundColor: colors.darkBlue,
-          height: 90,
+          height: 100,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          paddingTop: 10,
-          paddingBottom: 10,
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
+          paddingTop: 20,
+          paddingBottom: 40,
         },
 
         tabBarItemStyle: {
@@ -58,21 +55,6 @@ export default function Layout() {
               size={30}
               color={color}
               testID="pesquisaIcon"
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="ingredientesEpoca"
-        options={{
-          title: "",
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons
-              name="food-apple"
-              size={30}
-              color={color}
-              testID="ingredientesIcon"
             />
           ),
         }}

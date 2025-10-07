@@ -8,7 +8,7 @@ export default function perfilLayout() {
       <Stack.Screen name="alterarSenha" options={{ title: "Alterar senha" }} />
 
       <Stack.Screen
-        name="verComentários"
+        name="verComentarios"
         options={{ title: "Ver comentários" }}
       />
 

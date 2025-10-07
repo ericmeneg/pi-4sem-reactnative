@@ -7,4 +7,12 @@ export const globalStyles = StyleSheet.create({
   },
 
   container: { flex: 1, alignItems: "center" },
+
+  tituloPagina: {
+    color: "#22577A",
+    textAlign: "center",
+    marginBottom: 20,
+    fontSize: 30,
+    fontWeight: "bold",
+  },
 });
