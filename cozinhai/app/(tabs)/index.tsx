@@ -10,11 +10,13 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
-import DailyRecipes from "../../components/DailyRecipes";
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { themeContext } from "../../context/ThemeContext";
 import { globalStyles } from "../../styles/globalStyles";
 import Logo from "../../components/Logo";
+import { IRecipe } from "../../interfaces/recipe.interface";
+import { SPOONACULAR_API_KEY } from "@env";
+import RecipeCard from "../../components/RecipeCard";
 
 interface Alimento {
   nome: string;
@@ -129,10 +131,56 @@ const mesesNome = [
   "Dezembro",
 ];
 
+function seededRand(seed: number) {
+  let randomizedNumber = Math.sin(seed) * 1000;
+  return randomizedNumber - Math.floor(randomizedNumber);
+}
+
+function getDailySeeds(): number[] {
+  let today = new Date().toISOString().split("T")[0];
+  let seed = parseInt(today.replace(/-/g, ""), 10);
+  const seeds: number[] = [];
+
+  while (seeds.length < 3) {
+    seed++;
+    const random = Math.floor(seededRand(seed) * 1000000) % 5224;
+    seeds.push(random);
+  }
+
+  return seeds;
+}
+
+async function getDailyRecipes(offsets: number[]): Promise<IRecipe[]> {
+  const API_KEY = SPOONACULAR_API_KEY;
+  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch";
+
+  const results = await Promise.all(
+    offsets.map(async (offset) => {
+      const res = await fetch(
+        `${baseUrl}?apiKey=${API_KEY}&number=1&offset=${offset}`
+      );
+      const data = await res.json();
+      return data.results?.[0] ?? null;
+    })
+  );
+
+  return results.filter(Boolean) as IRecipe[];
+}
+
 export default function Home() {
   const [mesSelecionado, setMesSelecionado] = useState<number | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const { colors } = useContext(themeContext);
+
+  const [recipes, setRecipes] = useState<IRecipe[]>([]);
+  useEffect(() => {
+    async function loadRecipes() {
+      const seedArray = getDailySeeds();
+      const gotRecipes = await getDailyRecipes(seedArray);
+      setRecipes(gotRecipes);
+    }
+    loadRecipes();
+  }, []);
 
   const ingredientesDoMes = mesSelecionado
     ? alimentos
@@ -140,23 +188,154 @@ export default function Home() {
         .map((a) => a.nome)
     : [];
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      gap: 40,
+    },
+    header: {
+      paddingVertical: 25, // Maior espaçamento vertical no topo
+      paddingHorizontal: 20,
+    },
+    mainTitle: {
+      fontWeight: "bold",
+      marginBottom: 5,
+    },
+    subTitle: {
+      fontSize: 14,
+    },
+    quickSearchButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginHorizontal: 20,
+      paddingVertical: 14,
+      paddingHorizontal: 20,
+      borderRadius: 12, // Forma sutilmente arredondada
+      gap: 10,
+      marginBottom: 30, // Espaço confortável após a busca
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      elevation: 3,
+    },
+    quickSearchText: {
+      fontSize: 16,
+    },
+    shortcutsTitle: {
+      fontWeight: "bold",
+      paddingHorizontal: 20,
+      marginBottom: 10,
+      marginTop: 10,
+    },
+    shortcutsContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-between",
+      marginBottom: 30,
+      paddingHorizontal: 12,
+    },
+    dailyTitle: {
+      fontWeight: "bold",
+      marginBottom: 15,
+      paddingHorizontal: 20,
+    },
+
+    main: {
+      alignItems: "center",
+      paddingTop: 25,
+      paddingHorizontal: 16,
+      gap: 20,
+      marginBottom: 100,
+    },
+    safe: {
+      flex: 1,
+      backgroundColor: "#F9FAFB",
+    },
+
+    title: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: colors.darkBlue,
+      marginTop: 8,
+    },
+    mesSelecionadoBox: {
+      backgroundColor: "#22577A",
+      borderRadius: 50,
+      paddingVertical: 14,
+      paddingHorizontal: 40,
+      alignItems: "center",
+      marginTop: 16,
+      elevation: 3,
+      shadowColor: "#000",
+      shadowOpacity: 0.2,
+      shadowRadius: 4,
+    },
+    mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0,0,0,0.25)",
+      justifyContent: "flex-end",
+    },
+    modalContent: {
+      backgroundColor: "#fff",
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      width: "100%",
+      maxHeight: "60%",
+      paddingVertical: 10,
+      position: "absolute",
+      bottom: 0,
+      left: 0,
+      right: 0,
+      elevation: 8,
+      shadowColor: "#000",
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+    },
+    mesOption: { paddingVertical: 14, paddingHorizontal: 20 },
+    mesOptionText: { fontSize: 16, color: "#22577A" },
+    ingredientesContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "center",
+      marginTop: 20,
+      gap: 12,
+    },
+    ingredienteTag: {
+      backgroundColor: "#E6F4F1",
+      borderRadius: 20,
+      paddingHorizontal: 16,
+      paddingVertical: 10,
+      marginBottom: 10,
+      minWidth: 90,
+      alignItems: "center",
+      justifyContent: "center",
+      elevation: 2,
+      shadowColor: "#000",
+      shadowOpacity: 0.05,
+      shadowRadius: 2,
+    },
+    ingredienteText: {
+      fontSize: 15,
+      color: "#22577A",
+      fontWeight: "500",
+    },
+  });
+
   return (
     <ScrollView>
-      <View style={globalStyles.container}>
-        {/* <Text>Você está no index.tsx</Text>
-      <Link href="/receita">Ir para receitas</Link>
-      <Link href="/ingredientesEpoca">Ir para ingrediente sazonai</Link>
-      <Link href="../pesquisarReceitas">Ir para pesquisa de receitas</Link>
-      <Link href="/playground">Ir para exemplos de componente</Link>
-      <Link href={"/livroReceitas"}>Ir para livro de receitas</Link> */}
+      <View style={styles.container}>
+        <Logo />
 
-        <Image
-          source={require("../../assets/logo.png")}
-          style={globalStyles.logo}
-          resizeMode="contain"
-        />
-
-        <DailyRecipes />
+        <View style={styles.main} testID="recomendaçõesSection">
+          <Text style={styles.title}>Recomendações Diárias!</Text>
+          <View testID="recipeCards" style={{ alignItems: "center" }}>
+            {recipes.map((recipe) => (
+              <RecipeCard key={recipe.id} recipe={recipe} />
+            ))}
+          </View>
+        </View>
 
         <View style={styles.main} testID="sazonaisSection">
           <Text style={styles.title}>Ingredientes da Época</Text>
@@ -215,137 +394,3 @@ export default function Home() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    paddingVertical: 25, // Maior espaçamento vertical no topo
-    paddingHorizontal: 20,
-  },
-  mainTitle: {
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  subTitle: {
-    fontSize: 14,
-  },
-  quickSearchButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 12, // Forma sutilmente arredondada
-    gap: 10,
-    marginBottom: 30, // Espaço confortável após a busca
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  quickSearchText: {
-    fontSize: 16,
-  },
-  shortcutsTitle: {
-    fontWeight: "bold",
-    paddingHorizontal: 20,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  shortcutsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 30,
-    paddingHorizontal: 12,
-  },
-  dailyTitle: {
-    fontWeight: "bold",
-    marginBottom: 15,
-    paddingHorizontal: 20,
-  },
-
-  main: {
-    alignItems: "center",
-    paddingTop: 25,
-    paddingHorizontal: 16,
-    gap: 20,
-    marginBottom: 100,
-  },
-  safe: {
-    flex: 1,
-    backgroundColor: "#F9FAFB",
-  },
-
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#22577A",
-    marginTop: 8,
-  },
-  mesSelecionadoBox: {
-    backgroundColor: "#22577A",
-    borderRadius: 50,
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    alignItems: "center",
-    marginTop: 16,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)",
-    justifyContent: "flex-end",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    width: "100%",
-    maxHeight: "60%",
-    paddingVertical: 10,
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
-  },
-  mesOption: { paddingVertical: 14, paddingHorizontal: 20 },
-  mesOptionText: { fontSize: 16, color: "#22577A" },
-  ingredientesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginTop: 20,
-    gap: 12,
-  },
-  ingredienteTag: {
-    backgroundColor: "#E6F4F1",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginBottom: 10,
-    minWidth: 90,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-  },
-  ingredienteText: {
-    fontSize: 15,
-    color: "#22577A",
-    fontWeight: "500",
-  },
-});
