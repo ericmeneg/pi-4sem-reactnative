@@ -1,13 +1,10 @@
 import { Image, ScrollView, StyleSheet, View } from "react-native";
-import Header from "../components/Header";
 import ReceitaInfo from "../components/ReceitaInfo";
 import ReceitaSteps from "../components/ReceitaSteps";
 
 export default function Receita() {
   return (
     <ScrollView style={styles.container}>
-      <Header />
-
       <View style={styles.main} testID="main">
         <Image source={require("../assets/logo.png")} style={styles.mainLogo} />
 

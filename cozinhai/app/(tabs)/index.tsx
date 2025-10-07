@@ -194,7 +194,7 @@ export default function Home() {
       gap: 40,
     },
     header: {
-      paddingVertical: 25, // Maior espaçamento vertical no topo
+      paddingVertical: 25,
       paddingHorizontal: 20,
     },
     mainTitle: {

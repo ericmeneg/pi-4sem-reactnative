@@ -9,16 +9,26 @@ export default function Layout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: colors.cardBackground,
+        tabBarActiveTintColor: colors.darkBlue,
+        tabBarActiveBackgroundColor: colors.headerBackground,
         tabBarInactiveTintColor: colors.inactiveIcon,
-        tabBarLabelPosition: "below-icon",
+
         tabBarStyle: {
           backgroundColor: colors.darkBlue,
-          height: 100,
+          height: 90,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
-          /*borderColor: colors.darkBlue, */
-          paddingTop: 15,
+          paddingTop: 10,
+          paddingBottom: 10,
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+
+        tabBarItemStyle: {
+          marginHorizontal: 8,
+          justifyContent: "center",
+          alignItems: "center",
         },
         headerShown: false,
       }}
@@ -28,7 +38,12 @@ export default function Layout() {
         options={{
           title: "",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="home" size={28} color={color} />
+            <MaterialCommunityIcons
+              name="home"
+              size={28}
+              color={color}
+              testID="homeIcon"
+            />
           ),
         }}
       />
@@ -38,7 +53,12 @@ export default function Layout() {
         options={{
           title: "",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="magnify" size={30} color={color} />
+            <MaterialCommunityIcons
+              name="magnify"
+              size={30}
+              color={color}
+              testID="pesquisaIcon"
+            />
           ),
         }}
       />
@@ -48,7 +68,12 @@ export default function Layout() {
         options={{
           title: "",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="food-apple" size={30} color={color} />
+            <MaterialCommunityIcons
+              name="food-apple"
+              size={30}
+              color={color}
+              testID="ingredientesIcon"
+            />
           ),
         }}
       />
@@ -58,7 +83,12 @@ export default function Layout() {
         options={{
           title: "",
           tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account" size={30} color={color} />
+            <MaterialCommunityIcons
+              name="account"
+              size={30}
+              color={color}
+              testID="perfilIcon"
+            />
           ),
         }}
       />
