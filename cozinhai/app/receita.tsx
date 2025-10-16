@@ -1,6 +1,29 @@
 import { Image, ScrollView, StyleSheet, View } from "react-native";
 import ReceitaInfo from "../components/ReceitaInfo";
 import ReceitaSteps from "../components/ReceitaSteps";
+import { IComment } from "../interfaces/comment.interface";
+import { Card, Icon, Text } from "react-native-paper";
+
+let commentTestArray: IComment[] = [
+  {
+    userId: "1",
+    date: new Date("December 10, 2024 10:15:00"),
+    comment: "Bem fácil e gostoso!",
+    grade: 5
+  },
+  {
+    userId: "2",
+    date: new Date("June 6, 2025 8:10:00"),
+    comment: "É bom mas fez uma sujeira...",
+    grade: 3
+  },
+  {
+    userId: "3",
+    date: new Date("August 10, 2025 15:27:00"),
+    comment: "Não é o melhor que eu já fiz, mas dá pro gasto.",
+    grade: 4
+  }
+]
 
 export default function Receita() {
   return (
@@ -17,6 +40,28 @@ export default function Receita() {
             <ReceitaInfo />
           </View>
           <ReceitaSteps />
+        </View>
+        <View style= {{gap: 12}}>
+          {
+            commentTestArray.map(comment => (
+              <Card key={comment.userId}>
+                <Card.Content>
+                  <Text>{comment.comment}</Text>
+                  <View style={{ flexDirection: "row", marginTop: 4 }}>
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <Icon
+                    key={i}
+                    source={i < comment.grade ? "star" : "star-outline"}
+                    size={20}
+                    color={i < comment.grade ? "#22577A" : "#CCC"}
+                    />
+                  ))}
+                  </View>
+
+                </Card.Content>
+              </Card>
+            ))
+          }
         </View>
       </View>
     </ScrollView>
