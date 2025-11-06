@@ -58,6 +58,9 @@ export default function Receita() {
                     color={i < comment.grade ? "#22577A" : "#CCC"}
                     />
                   ))}
+                  {comment.imageBase64 ? (
+                    <Image source={{uri: comment.imageBase64}}/>
+                  ) : null}
                   </View>
 
                 </Card.Content>
