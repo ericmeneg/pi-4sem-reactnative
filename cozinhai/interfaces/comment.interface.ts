@@ -3,4 +3,5 @@ export interface IComment {
     date: Date,
     comment: string,
     grade: number
+    imageBase64?: string
 }
