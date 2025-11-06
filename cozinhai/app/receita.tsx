@@ -2,7 +2,7 @@ import { Image, ScrollView, StyleSheet, View } from "react-native";
 import ReceitaInfo from "../components/ReceitaInfo";
 import ReceitaSteps from "../components/ReceitaSteps";
 import { IComment } from "../interfaces/comment.interface";
-import { Card, Icon, Text } from "react-native-paper";
+import { Card, Icon, Text, Avatar } from "react-native-paper";
 
 let commentTestArray: IComment[] = [
   {
@@ -46,6 +46,8 @@ export default function Receita() {
             commentTestArray.map(comment => (
               <Card key={comment.userId}>
                 <Card.Content>
+                  <Card.Title title="Paulo" subtitle="10/02/2024"
+                  left= {() => <Avatar.Icon icon="account" size={48} style={{backgroundColor: 'teal' ,marginLeft: -10}}/>} />
                   <Text>{comment.comment}</Text>
                   <View style={{ flexDirection: "row", marginTop: 4 }}>
                   {Array.from({ length: 5 }, (_, i) => (
