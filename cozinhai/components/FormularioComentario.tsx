@@ -1,6 +1,16 @@
 import { useState } from "react";
-import { Pressable, View } from "react-native";
+import { Alert, Pressable, View } from "react-native";
 import { Avatar, Card, Icon, Text, TextInput } from "react-native-paper";
+import * as ImagePicker from "expo-image-picker"
+
+async function pedirPermissao(){
+    const { status } = await ImagePicker.requestCameraPermissionsAsync()
+    if (status !== 'granted') {
+        Alert.alert("Permissão negada", "Precisamos de acesso a câmera para que você possa adicionar fotos ao seu comentário (fotos são opcionais)")
+        return false
+    }
+    return true
+}
 
 export default function FormularioComentario() {
     //controlam o conteúdo dos campos do formulário
