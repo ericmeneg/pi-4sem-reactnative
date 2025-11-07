@@ -9,7 +9,7 @@ let commentTestArray: IComment[] = [
     userId: "1",
     date: new Date("December 10, 2024 10:15:00"),
     comment: "Bem fácil e gostoso!",
-    grade: 5
+    grade: 5,
   },
   {
     userId: "2",
@@ -41,26 +41,28 @@ export default function Receita() {
           </View>
           <ReceitaSteps />
         </View>
-        <View style= {{gap: 12}}>
+        <View style={{ gap: 12 }}>
           {
             commentTestArray.map(comment => (
-              <Card key={comment.userId}>
+              <Card style={{ maxWidth: 275 }} key={comment.userId}>
                 <Card.Content>
                   <Card.Title title="Paulo" subtitle="10/02/2024"
-                  left= {() => <Avatar.Icon icon="account" size={48} style={{backgroundColor: 'teal' ,marginLeft: -10}}/>} />
+                    left={() => <Avatar.Icon icon="account" size={48} style={{ backgroundColor: 'teal', marginLeft: -10 }} />} />
                   <Text>{comment.comment}</Text>
-                  <View style={{ flexDirection: "row", marginTop: 4 }}>
-                  {Array.from({ length: 5 }, (_, i) => (
-                    <Icon
-                    key={i}
-                    source={i < comment.grade ? "star" : "star-outline"}
-                    size={20}
-                    color={i < comment.grade ? "#22577A" : "#CCC"}
-                    />
-                  ))}
-                  {comment.imageBase64 ? (
-                    <Image source={{uri: comment.imageBase64}}/>
-                  ) : null}
+                  <View style={{ flexDirection: "column", marginTop: 4, alignItems: "center", gap: 10 }}>
+                    <View style={{ flexDirection: "row", marginTop: 6 }}>
+                      {Array.from({ length: 5 }, (_, i) => (
+                        <Icon
+                          key={i}
+                          source={i < comment.grade ? "star" : "star-outline"}
+                          size={20}
+                          color={i < comment.grade ? "#22577A" : "#CCC"}
+                        />
+                      ))}
+                    </View>
+                    {comment.imageBase64 ? (
+                      <Image style={{ width: 100, height: 100, borderRadius: 6 }} source={{ uri: comment.imageBase64 }} />
+                    ) : null}
                   </View>
 
                 </Card.Content>
@@ -100,6 +102,7 @@ const styles = StyleSheet.create({
     gap: 30,
     alignItems: "center",
     justifyContent: "space-around",
+    flexWrap: "wrap"
   },
 
   receitaDiv: {
