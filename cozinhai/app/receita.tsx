@@ -44,7 +44,7 @@ export default function Receita() {
         <View style={{ gap: 12 }}>
           {
             commentTestArray.map(comment => (
-              <Card style={{ maxWidth: 275 }} key={comment.userId}>
+              <Card style={{ maxWidth: 325 }} key={comment.userId}>
                 <Card.Content>
                   <Card.Title title="Paulo" subtitle="10/02/2024"
                     left={() => <Avatar.Icon icon="account" size={48} style={{ backgroundColor: 'teal', marginLeft: -10 }} />} />
