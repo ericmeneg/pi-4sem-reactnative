@@ -3,6 +3,7 @@ import ReceitaInfo from "../components/ReceitaInfo";
 import ReceitaSteps from "../components/ReceitaSteps";
 import { IComment } from "../interfaces/comment.interface";
 import { Card, Icon, Text, Avatar } from "react-native-paper";
+import FormularioComentario from "../components/FormularioComentario";
 
 let commentTestArray: IComment[] = [
   {
@@ -42,6 +43,7 @@ export default function Receita() {
           <ReceitaSteps />
         </View>
         <View style={{ gap: 12 }}>
+          <FormularioComentario />
           {
             commentTestArray.map(comment => (
               <Card style={{ maxWidth: 325 }} key={comment.userId}>
