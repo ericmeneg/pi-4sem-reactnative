@@ -1,7 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { Slot, useRouter, usePathname } from 'expo-router';
-import { PaperProvider } from 'react-native-paper';
+import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Tipos
@@ -11,12 +8,12 @@ interface User {
   email: string;
 }
 
-interface AuthContextType {
+interface AuthContextData {
   user: User | null;
   token: string | null;
-  isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  isLoading: boolean;
 }
 
 interface AuthResponse {
@@ -28,18 +25,19 @@ interface ErrorResponse {
   message: string;
 }
 
-// Context
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Crie o contexto
+const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-// URL da API - Backend hospedado no Render
-const API_URL = 'https://pi-3sem-backend.onrender.com';
-
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+// Provider
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carrega dados salvos ao iniciar
+  // URL da sua API - AJUSTE AQUI para o seu backend
+  const API_URL = 'http://localhost:3000'; // Para emulador Android use: http://10.0.2.2:3000
+
+  // Carrega os dados salvos quando o app inicia
   useEffect(() => {
     loadStorageData();
   }, []);
@@ -72,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const data = await response.json();
 
+      // Trata erros do backend
       if (!response.ok) {
         const errorData = data as ErrorResponse;
         throw new Error(errorData.message || 'Erro ao fazer login');
@@ -94,8 +93,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signOut = async () => {
     try {
+      // Limpa o estado
       setToken(null);
       setUser(null);
+
+      // Remove do AsyncStorage
       await AsyncStorage.removeItem('@App:token');
       await AsyncStorage.removeItem('@App:user');
     } catch (error) {
@@ -104,59 +106,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        signIn,
+        signOut,
+        isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  return ctx;
-}
+// Hook customizado para usar o contexto
+export const useAuth = () => {
+  const context = useContext(AuthContext);
 
-function AuthGate() {
-  const { user, isLoading } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (isLoading) return;
-
-    const publicRoutes = ['/login', '/register'];
-    const current = pathname ?? '';
-
-    if (!user && !publicRoutes.includes(current)) {
-      router.replace('/login');
-    } else if (user && publicRoutes.includes(current)) {
-      router.replace('/tabs');
-    }
-  }, [user, isLoading, router, pathname]);
-
-  if (isLoading) {
-    return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+  if (!context) {
+    throw new Error('useAuth deve ser usado dentro de um AuthProvider');
   }
 
-  return <Slot />;
-}
-
-export default function Layout() {
-  return (
-    <PaperProvider>
-      <AuthProvider>
-        <AuthGate />
-      </AuthProvider>
-    </PaperProvider>
-  );
-}
-
-const styles = StyleSheet.create({
-  loading: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-});
+  return context;
+};
