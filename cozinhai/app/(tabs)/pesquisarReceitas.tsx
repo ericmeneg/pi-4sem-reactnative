@@ -1,32 +1,24 @@
 import React, { useContext, useState } from "react";
-import {
-    ScrollView,
-    StyleSheet,
-    View,
-    SafeAreaView,
-    TextInput,
-    TouchableOpacity,
-    Text,
-    FlatList,
-} from "react-native";
+import { ScrollView, StyleSheet, View, SafeAreaView, TextInput, TouchableOpacity, Text, FlatList } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { themeContext } from "../../context/ThemeContext";
 import Logo from "../../components/Logo";
-import RecipeCard from "../../components/RecipeCard"; // ajuste o caminho conforme seu projeto
+import RecipeCard from "../../components/RecipeCard";
 import { IRecipe } from "../../interfaces/recipe.interface";
+import { SPOONACULAR_API_KEY } from "@env";
 
 export default function PesquisarReceitas() {
     const { colors } = useContext(themeContext);
 
-    const [searchType, setSearchType] = useState<"ingredients" | "recipes">(
-        "ingredients"
-    );
+    const [searchType, setSearchType] = useState<"ingredients" | "recipes">("ingredients");
     const [ingredient, setIngredient] = useState("");
     const [ingredients, setIngredients] = useState<string[]>([]);
     const [filtersVisible, setFiltersVisible] = useState(false);
     const [filters, setFilters] = useState<string[]>([]);
     const [recipeTitle, setRecipeTitle] = useState("");
     const [searchResults, setSearchResults] = useState<IRecipe[]>([]);
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const filterOptions = [
         "Sem Lactose",
@@ -77,16 +69,89 @@ export default function PesquisarReceitas() {
         },
     ];
 
-    // Simula uma busca (mock)
-    const handleSearch = () => {
-        if (searchType === "ingredients" && ingredients.length > 0) {
-            setSearchResults(mockRecipes);
-        } else if (searchType === "recipes" && recipeTitle.trim()) {
-            setSearchResults(mockRecipes);
-        } else {
-            setSearchResults([]);
+    async function fetchByIngredients(ingredientsList: string[]) {
+        if (!SPOONACULAR_API_KEY) {
+            throw new Error("Chave da API Spoonacular não encontrada")
         }
-    };
+        if (ingredientsList.length === 0) return []
+
+        const ingredientsParam = ingredientsList.map((item) => item.trim()).join(",")
+        const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(
+            ingredientsParam
+        )}&number=12&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_API_KEY}`
+
+        const res = await fetch(url)
+        if (!res.ok) {
+            const text = await res.text()
+            throw new Error(`Erro de API Spoonacular: ${res.status} ${text}`)
+        }
+
+        //api devolve um array de receitas
+        const data = (await res.json()) as any[]
+
+        //mapeia o os itens do array recebido para a tipagem de IRecipe
+        return data.map((r) => ({
+            id: Number(r.id),
+            title: String(r.title),
+            image: r.image ? String(r.image) : ""
+        })) as IRecipe[]
+    }
+
+    async function fetchByTitle(query: string) {
+        if (!SPOONACULAR_API_KEY) {
+            throw new Error("Chave da API Spoonacular não encontrada")
+        }
+        if (!query.trim()) return []
+
+        const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(
+            query
+        )}&number=12&addRecipeInformation=false&apiKey=${SPOONACULAR_API_KEY}`
+
+        const res = await fetch(url)
+        if (!res.ok) {
+            const text = await res.text()
+            throw new Error(`Erro de API Spoonacular: ${res.status} ${text}`)
+        }
+        const json = await res.json()
+
+        //mesma tratativa da função fetchByIngredients
+        const results = (json.results ?? []) as any
+        return results.map((r) => ({
+            id: Number(r.id),
+            title: String(r.title),
+            image: r.image ? String(r.image) : "",
+        })) as IRecipe[]
+    }
+
+    async function handleSearch() {
+        setError(null)
+        setLoading(true)
+        setSearchResults([])
+
+        try {
+            let results: IRecipe[] = []
+            if (searchType === "ingredients") {
+                if (ingredients.length === 0) {
+                    setSearchResults([])
+                    setLoading(false)
+                    return
+                }
+                results = await fetchByIngredients(ingredients)
+            } else {
+                if (!recipeTitle.trim()) {
+                    setSearchResults([])
+                    setLoading(false)
+                    return
+                }
+                results = await fetchByTitle(recipeTitle)
+            }
+            setSearchResults(searchResults.length ? searchResults : [])
+        } catch (err: any) {
+            setError(err.message || "Erro na busca!")
+        } finally {
+            setLoading(false)
+        }
+    }
 
     const styles = StyleSheet.create({
         safeArea: { flex: 1, backgroundColor: colors.background },
