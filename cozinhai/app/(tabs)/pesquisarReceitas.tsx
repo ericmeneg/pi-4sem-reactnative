@@ -50,25 +50,6 @@ export default function PesquisarReceitas() {
         );
     };
 
-    // Mock de resultados (será substituído pela API)
-    const mockRecipes: IRecipe[] = [
-        {
-            _id: "1",
-            title: "Bolo de Cenoura com Cobertura de Chocolate",
-            image: "https://images.unsplash.com/photo-1605475128023-715f8b1e0b7e",
-        },
-        {
-            _id: "2",
-            title: "Salada Mediterrânea",
-            image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371",
-        },
-        {
-            _id: "3",
-            title: "Lasanha de Berinjela",
-            image: "https://images.unsplash.com/photo-1617196035369-8b9e0f2cb3ac",
-        },
-    ];
-
     async function fetchByIngredients(ingredientsList: string[]) {
         if (!SPOONACULAR_API_KEY) {
             throw new Error("Chave da API Spoonacular não encontrada")
@@ -145,7 +126,7 @@ export default function PesquisarReceitas() {
                 }
                 results = await fetchByTitle(recipeTitle)
             }
-            setSearchResults(searchResults.length ? searchResults : [])
+            setSearchResults(results.length ? results : [])
         } catch (err: any) {
             setError(err.message || "Erro na busca!")
         } finally {
@@ -379,7 +360,7 @@ export default function PesquisarReceitas() {
                     {searchResults.length > 0 ? (
                         <FlatList
                             data={searchResults}
-                            keyExtractor={(item) => item._id}
+                            keyExtractor={(item) => item.id.toString()}
                             renderItem={({ item }) => <RecipeCard recipe={item} />}
                             contentContainerStyle={{ alignItems: "center" }}
                             scrollEnabled={false}
