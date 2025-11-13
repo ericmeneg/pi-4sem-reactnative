@@ -1,70 +1,88 @@
-import { StyleSheet } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from "react-native";
+import { Text } from "react-native-paper";
 import { IRecipe } from "../interfaces/recipe.interface";
+import BookmarkButton from "./BookmarkButton";
 import { useContext } from "react";
 import { themeContext } from "../context/ThemeContext";
-import BookmarkButton from "./BookmarkButton";
 
 interface RecipeCardProps {
   recipe: IRecipe;
-  onPress?: (recipe: IRecipe) => void; // Adicione esta linha
+  onPress?: (recipe: IRecipe) => void;
 }
 
 export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
-    const handlePress = () => {
-        if (onPress) {
-            onPress(recipe);
-        } else {
-        }
-    };
+  const { colors } = useContext(themeContext);
+  const screenWidth = Dimensions.get("window").width;
 
-    return (
-        <Card onPress={()=>{}} mode="elevated" elevation={5} style={styles.card}>
-            <Card.Cover source={{ uri: recipe.image }} />
-            <Card.Content>
-                <Text variant="titleMedium" style={styles.title}>
-                    {recipe.title} {"\n"} <BookmarkButton size={30}/>
-                </Text>
-            </Card.Content>
-        </Card>
-    );
+  const CARD_WIDTH = screenWidth * 0.92;
+  const IMAGE_SIZE = screenWidth * 0.22;
+
+  const TITLE_FONT = 16; // tamanho padronizado, bom em todos os celulares
+
+  const handlePress = () => onPress?.(recipe);
+
+  return (
+    <TouchableOpacity
+      onPress={handlePress}
+      activeOpacity={0.85}
+      style={[
+        styles.card,
+        { width: CARD_WIDTH, borderColor: colors.darkBlue }
+      ]}
+    >
+      <Image
+        source={{ uri: recipe.image }}
+        style={[styles.image, { width: IMAGE_SIZE, height: IMAGE_SIZE }]}
+      />
+
+      <View style={styles.infoContainer}>
+        <Text
+          style={[
+            styles.title,
+            {
+              fontSize: TITLE_FONT,
+              lineHeight: TITLE_FONT * 1.2,
+              color: colors.darkBlue,
+            },
+          ]}
+          numberOfLines={2}
+        >
+          {recipe.title}
+        </Text>
+
+        <BookmarkButton size={24} />
+      </View>
+    </TouchableOpacity>
+  );
 }
 
-const { colors } = useContext(themeContext)
+const styles = StyleSheet.create({
+  card: {
+    flexDirection: "row",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderRadius: 16,
+    backgroundColor: "#FFF",
+    alignItems: "center",
+    marginVertical: 6,
+  },
 
-  const styles = StyleSheet.create({
-    card: {
-      marginVertical: 10,
-      borderRadius: 12,
-      alignItems: "center",
-      width: "90%",
-      maxWidth: 350,
-      backgroundColor: "transparent",
-      borderColor: colors.darkBlue,
-      borderWidth: 2,
-      padding: 20,
-    },
+  image: {
+    borderRadius: 12,
+  },
 
-    cardContent: {
-      gap: 20,
-    },
+  infoContainer: {
+    flex: 1,
+    marginLeft: 14,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
 
-    title: {
-      textAlign: "center",
-      color: colors.darkBlue,
-      fontWeight: "bold",
-    },
-  });
-
-  // return (
-  //   <Card style={styles.card}>
-  //     <Card.Content style={styles.cardContent}>
-  //       <Card.Cover source={{ uri: recipe.image }} />
-  //       <Text variant="titleMedium" testID="recipeTitle" style={styles.title}>
-  //         {recipe.title}
-  //       </Text>
-  //     </Card.Content>
-  //   </Card>
-  // );
-  //}
-
+  title: {
+    fontWeight: "600",
+    flexShrink: 1,
+    maxWidth: "75%",
+  },
+});

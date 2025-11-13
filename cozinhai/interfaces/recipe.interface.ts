@@ -1,5 +1,5 @@
 export interface IRecipe {
-    id: number,
-    title: string,
-    image: string  
+  id: number;
+  title: string;
+  image: string;
 }
