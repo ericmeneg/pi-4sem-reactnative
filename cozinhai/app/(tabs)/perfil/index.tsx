@@ -119,7 +119,7 @@ export default function Perfil() {
           <View style={[globalStyles.container, styles.container]}>
             <Logo />
 
-            <View style={styles.header}>
+            <View style={[styles.header, {marginTop: -100}]}>
               <MaterialCommunityIcons
                 name="account-circle-outline"
                 size={80}
@@ -169,7 +169,7 @@ export default function Perfil() {
         <View style={[globalStyles.container, styles.container]}>
           <Logo />
 
-          <View style={styles.header}>
+          <View style={[styles.header, {marginTop: -100}]}>
             <MaterialCommunityIcons
               name="account-circle-outline"
               size={80}
