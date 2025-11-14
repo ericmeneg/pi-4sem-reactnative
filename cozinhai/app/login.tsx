@@ -31,7 +31,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await signIn(email.trim(), password);
-      router.replace('/tabs');
+      router.replace('/');
     } catch (err: any) {
       Alert.alert('Erro', err?.message || 'Falha ao efetuar login');
     } finally {
@@ -39,7 +39,7 @@ export default function LoginPage() {
     }
   };
 
-  const handleVisitor = () => router.replace('/tabs');
+  const handleVisitor = () => router.replace('/');
 
   const logo = (() => {
     try {
