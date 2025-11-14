@@ -1,10 +1,15 @@
 import { useContext } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { themeContext } from "../context/ThemeContext";
-import { List } from "react-native-paper";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { IRecipe } from "../interfaces/recipe.interface";
+import IIngredients from "../interfaces/ingredient.interface";
 
-export default function ReceitaSteps() {
+interface ReceitaStepsProps {
+  recipe: IRecipe
+}
+
+export default function ReceitaSteps({ recipe }: ReceitaStepsProps) {
   const { colors } = useContext(themeContext);
   const styles = StyleSheet.create({
     container: {
@@ -40,25 +45,39 @@ export default function ReceitaSteps() {
 
   return (
     <View testID="container" style={styles.container}>
-      <View testID="ingredientsSection" style={styles.section}>
-        <Text style={styles.title}>Ingredientes</Text>
-        <View testID="ingredient" style={styles.ingredient}>
-          <View style={[{ alignItems: "center", justifyContent: "center" }]}>
-            <MaterialCommunityIcons
-              name="circle-medium"
-              style={{ color: colors.darkBlue }}
-            />
-          </View>
-          <Text style={{ color: colors.darkBlue }}>Ingredient1</Text>
-        </View>
-      </View>
 
-      <View testID="stepsSection" style={styles.section}>
-        <Text style={styles.title}>Modo de Preparo</Text>
-        <Text style={styles.descText}>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit:
-        </Text>
-      </View>
+      {recipe.extendedIngredients?.length > 0 && (
+        <View testID="ingredientsSection" style={styles.section}>
+          <Text style={styles.title}>Ingredientes</Text>
+
+          {recipe.extendedIngredients.map((ingredient: IIngredients) => (
+            <View
+              key={ingredient.id}
+              testID="ingredient"
+              style={styles.ingredient}
+            >
+              <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <MaterialCommunityIcons
+                  name="circle-medium"
+                  style={{ color: colors.darkBlue }}
+                />
+              </View>
+
+              <Text style={{ color: colors.darkBlue }}>
+                {ingredient.amount}{" "}
+                {ingredient.unit ? ingredient.unit : ""} {ingredient.name}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+
+      {recipe.instructions && (
+        <View testID="stepsSection" style={styles.section}>
+          <Text style={styles.title}>Modo de Preparo</Text>
+          <Text>{recipe.instructions}</Text>
+        </View>
+      )}
     </View>
-  );
+  )
 }
