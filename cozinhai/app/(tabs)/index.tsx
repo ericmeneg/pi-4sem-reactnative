@@ -17,6 +17,7 @@ import Logo from "../../components/Logo";
 import { IRecipe } from "../../interfaces/recipe.interface";
 import { SPOONACULAR_API_KEY } from "@env";
 import RecipeCard from "../../components/RecipeCard";
+import { router } from "expo-router";
 
 interface Alimento {
   nome: string;
@@ -131,40 +132,56 @@ const mesesNome = [
   "Dezembro",
 ];
 
+function shuffleArray<T>(arr: T[], seed: number): T[] {
+  let t = seed;
+  const rng = () => {
+    t += 0x6D2B79F5;
+    let x = t;
+    x = Math.imul(x ^ (x >>> 15), x | 1);
+    x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
+
+  return arr
+    .map((v) => ({ v, sort: rng() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ v }) => v);
+}
+
+async function getDailyRecipes(seed: number): Promise<IRecipe[]> {
+  const API_KEY = "";
+  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch";
+
+  const res = await fetch(`${baseUrl}?apiKey=${API_KEY}&number=30`);
+  const data = await res.json();
+
+  const allRecipes: IRecipe[] = data.results ?? [];
+
+  const shuffled = shuffleArray(allRecipes, seed);
+
+  return shuffled.slice(0, 3);
+}
+
 function seededRand(seed: number) {
-  let randomizedNumber = Math.sin(seed) * 1000;
-  return randomizedNumber - Math.floor(randomizedNumber);
+  let t = seed
+  return function () {
+    t += 0x6D2B79F5
+    let x = t 
+    x = Math.imul(x ^ (x >>> 15), x | 1)
+    x ^= x + Math.imul(x ^ (x >>> 7), x | 61)
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296
+  }
 }
 
 function getDailySeeds(): number[] {
   let today = new Date().toISOString().split("T")[0];
-  let seed = parseInt(today.replace(/-/g, ""), 10);
+  let baseSeed = parseInt(today.replace(/-/g, ""), 10);
+  const rng = seededRand(baseSeed)
   const seeds: number[] = [];
-
   while (seeds.length < 3) {
-    seed++;
-    const random = Math.floor(seededRand(seed) * 1000000) % 5224;
-    seeds.push(random);
+    seeds.push(Math.floor(rng() * 5224));
   }
-
   return seeds;
-}
-
-async function getDailyRecipes(offsets: number[]): Promise<IRecipe[]> {
-  const API_KEY = SPOONACULAR_API_KEY;
-  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch";
-
-  const results = await Promise.all(
-    offsets.map(async (offset) => {
-      const res = await fetch(
-        `${baseUrl}?apiKey=${API_KEY}&number=1&offset=${offset}`
-      );
-      const data = await res.json();
-      return data.results?.[0] ?? null;
-    })
-  );
-
-  return results.filter(Boolean) as IRecipe[];
 }
 
 export default function Home() {
@@ -175,17 +192,18 @@ export default function Home() {
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
   useEffect(() => {
     async function loadRecipes() {
-      const seedArray = getDailySeeds();
-      const gotRecipes = await getDailyRecipes(seedArray);
+      const todaySeed = parseInt(new Date().toISOString().split("T")[0].replace(/-/g, ""), 10);
+      const gotRecipes = await getDailyRecipes(todaySeed);
       setRecipes(gotRecipes);
     }
     loadRecipes();
   }, []);
 
+
   const ingredientesDoMes = mesSelecionado
     ? alimentos
-        .filter((a) => a.meses.includes(mesSelecionado))
-        .map((a) => a.nome)
+      .filter((a) => a.meses.includes(mesSelecionado))
+      .map((a) => a.nome)
     : [];
 
   const styles = StyleSheet.create({
@@ -332,7 +350,7 @@ export default function Home() {
           <Text style={styles.title}>Recomendações Diárias!</Text>
           <View testID="recipeCards" style={{ alignItems: "center" }}>
             {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} />
+              <RecipeCard key={recipe.id} recipe={recipe} onPress={(recipe) => router.push(`../recipe/${recipe.id}`)} />
             ))}
           </View>
         </View>
