@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   Pressable,
   StyleSheet,
   Image,
@@ -12,6 +11,7 @@ import {
   Platform,
   Keyboard,
 } from 'react-native';
+import { Button, TextInput } from "react-native-paper"
 import { useRouter } from 'expo-router';
 import { useAuth } from './_layout';
 
@@ -22,6 +22,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [secure, setSecure] = useState(true);
 
   const handleLogin = async () => {
     if (!email.trim() || !password) {
@@ -61,19 +62,21 @@ export default function LoginPage() {
       behavior={Platform.select({ ios: 'padding', android: undefined })}
       style={styles.container}
     >
-      <Pressable 
-        style={styles.inner} 
+      <Pressable
+        style={styles.inner}
         onPress={dismissKeyboard}
         accessible={false}
       >
         {logo && <Image source={logo} style={styles.logo} resizeMode="contain" />}
 
-        <Text style={styles.title}>Bem Vindo(a)!</Text>
+        <Text style={styles.title}>{"Bem Vindo(a)"}!</Text>
         <Text style={styles.subtitle}>Entre com seu login:</Text>
 
         <TextInput
+          mode="outlined"
           style={styles.input}
-          placeholder="Insira seu e-mail"
+          activeOutlineColor='#22577A'
+          label="Insira seu e-mail"
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -84,31 +87,37 @@ export default function LoginPage() {
         />
 
         <TextInput
+          mode="outlined"
+          secureTextEntry={secure}
           style={styles.input}
-          placeholder="Insira sua senha"
-          secureTextEntry
+          activeOutlineColor='#22577A'
+          label="Insira sua senha"
           value={password}
           onChangeText={setPassword}
           editable={!submitting && !isLoading}
           returnKeyType="done"
           onSubmitEditing={handleLogin}
+          right={<TextInput.Icon icon={secure ? "eye-off" : "eye"}
+            onPress={() => setSecure(!secure)} />}
         />
 
-        <Pressable
-          style={[styles.button, (submitting || isLoading) && styles.buttonDisabled]}
-          onPress={handleLogin}
+
+        <Button
+          mode="contained"
+          style={[ {marginTop: 14, width: "100%", backgroundColor: "#22577A"}, (submitting || isLoading) && styles.buttonDisabled]}
           disabled={submitting || isLoading}
+          onPress={handleLogin}
         >
           {(submitting || isLoading) ? (
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.buttonText}>Entrar</Text>
           )}
-        </Pressable>
+        </Button>
 
-        <Pressable onPress={() => router.push('/register')}>
+        <Button style={{width: "100%", marginTop: 8}} mode="outlined" onPress={() => router.push('/register')}>
           <Text style={styles.link}>Ainda não tem uma conta? Cadastre-se</Text>
-        </Pressable>
+        </Button>
 
         <View style={styles.orRow}>
           <View style={styles.line} />
@@ -116,9 +125,9 @@ export default function LoginPage() {
           <View style={styles.line} />
         </View>
 
-        <Pressable onPress={handleVisitor}>
+        <Button mode="outlined" style={{width: "100%"}} onPress={handleVisitor}>
           <Text style={styles.visitorLink}>Entrar como visitante</Text>
-        </Pressable>
+        </Button>
       </Pressable>
     </KeyboardAvoidingView>
   );
@@ -133,12 +142,7 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 46,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingHorizontal: 12,
     marginTop: 8,
-    backgroundColor: '#fff',
   },
   button: {
     width: '100%',
@@ -155,5 +159,5 @@ const styles = StyleSheet.create({
   orRow: { width: '100%', flexDirection: 'row', alignItems: 'center', marginVertical: 18 },
   line: { flex: 1, height: 1, backgroundColor: '#ddd' },
   orText: { marginHorizontal: 12, color: '#6b7d87' },
-  visitorLink: { color: '#2b5f78', textDecorationLine: 'underline' },
+  visitorLink: { color: '#2b5f78', width: "100%"},
 });
