@@ -5,7 +5,9 @@ import { themeContext } from "../../context/ThemeContext";
 import Logo from "../../components/Logo";
 import RecipeCard from "../../components/RecipeCard";
 import { IRecipe } from "../../interfaces/recipe.interface";
-import { SPOONACULAR_API_KEY } from "@env";
+import { router } from "expo-router";
+
+const SPOONACULAR_API_KEY = ""
 
 export default function PesquisarReceitas() {
     const { colors } = useContext(themeContext);
@@ -135,7 +137,7 @@ export default function PesquisarReceitas() {
     }
 
     const styles = StyleSheet.create({
-        safeArea: { flex: 1, backgroundColor: colors.background },
+        safeArea: { flex: 1 },
         scrollViewContent: { flexGrow: 1, paddingBottom: 120 },
         mainContent: {
             paddingVertical: 20,
@@ -361,7 +363,7 @@ export default function PesquisarReceitas() {
                         <FlatList
                             data={searchResults}
                             keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => <RecipeCard recipe={item} />}
+                            renderItem={({ item }) => <RecipeCard recipe={item} onPress={(recipe) => router.push(`../recipe/${recipe.id}`)} />}
                             contentContainerStyle={{ alignItems: "center" }}
                             scrollEnabled={false}
                         />
