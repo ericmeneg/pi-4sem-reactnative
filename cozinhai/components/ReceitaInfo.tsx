@@ -2,8 +2,13 @@ import { StyleSheet, Text, View } from "react-native";
 import { useContext } from "react";
 import { themeContext } from "../context/ThemeContext";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { IRecipe } from "../interfaces/recipe.interface";
 
-export default function ReceitaInfo() {
+interface ReceitaInfoProps {
+  recipe: IRecipe
+}
+
+export default function ReceitaInfo({ recipe }: ReceitaInfoProps) {
   const { colors } = useContext(themeContext);
 
   const styles = StyleSheet.create({
@@ -37,36 +42,34 @@ export default function ReceitaInfo() {
 
   return (
     <View testID="container" style={styles.container}>
-      <Text style={styles.title}>Título Da Receita</Text>
+      <Text style={styles.title}>{recipe.title}</Text>
 
-      <View testID="receitaInfoDesc" style={styles.receitaInfoDesc}>
-        <View testID="receitaInfoItem1" style={styles.receitaInfoItem}>
-          <MaterialCommunityIcons
-            name="account"
-            size={26}
-            style={styles.subTitleLow}
-          />
-          <Text style={styles.subTitleLow}>Serve X Pessoas</Text>
+      {recipe.servings && (
+        <View testID="receitaInfoDesc" style={styles.receitaInfoDesc}>
+          <View testID="receitaInfoItem1" style={styles.receitaInfoItem}>
+            <MaterialCommunityIcons
+              name="account"
+              size={26}
+              style={styles.subTitleLow}
+            />
+            <Text style={styles.subTitleLow}>
+              Serve {recipe.servings} Pessoas
+            </Text>
+          </View>
         </View>
+      )}
 
-        <View testID="receitaInfoItem2" style={styles.receitaInfoItem}>
-          <MaterialCommunityIcons
-            name="pot-steam-outline"
-            size={26}
-            style={styles.subTitleLow}
-          />
-          <Text style={styles.subTitleLow}>Vai ao Fogo</Text>
-        </View>
 
+      {recipe.readyInMinutes && (
         <View testID="receitaInfoItem3" style={styles.receitaInfoItem}>
           <MaterialCommunityIcons
             name="clock-time-eight-outline"
             size={26}
             style={styles.subTitleLow}
           />
-          <Text style={styles.subTitleLow}>X Minutos</Text>
-        </View>
-      </View>
-    </View>
+          <Text style={styles.subTitleLow}>Pronto em {recipe.readyInMinutes} Minutos</Text>
+        </View>)
+}
+    </View >
   );
 }
