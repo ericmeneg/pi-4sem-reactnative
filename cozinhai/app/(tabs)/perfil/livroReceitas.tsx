@@ -2,7 +2,6 @@ import { IRecipe } from "../../../interfaces/recipe.interface";
 import RecipeCard from "../../../components/RecipeCard";
 import { ScrollView, StyleSheet, View, SafeAreaView } from "react-native";
 import { Text } from "react-native-paper";
-import BookmarkButton from "../../../components/BookmarkButton";
 import VoltarHeader from "../../../components/VoltarHeader";
 import { useContext } from "react";
 import { themeContext } from "../../../context/ThemeContext";
@@ -49,32 +48,26 @@ export default function LivroReceitas() {
       flex: 1,
       backgroundColor: "#fff",
     },
+
     content: {
       ...globalStyles.container,
       alignItems: "center",
       paddingBottom: 100,
+      paddingTop: 10,
     },
+
     titulo: {
       ...globalStyles.tituloPagina,
       marginTop: 20,
-      marginBottom: 30,
-      textAlign: "center",
+      marginBottom: 20,
       color: colors.darkBlue,
+      textAlign: "center",
     },
+
     recipeList: {
-      gap: 20,
       width: "100%",
       alignItems: "center",
-    },
-    recipeItem: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      width: "90%",
-      backgroundColor: "#f5f5f5",
-      borderRadius: 16,
-      padding: 10,
-      elevation: 2,
+      gap: 20,
     },
   });
 
@@ -83,14 +76,12 @@ export default function LivroReceitas() {
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <VoltarHeader />
+
           <Text style={styles.titulo}>Livro de Receitas</Text>
 
           <View style={styles.recipeList}>
             {receitasDemo.map((receita) => (
-              <View style={styles.recipeItem} key={receita.id}>
-                <RecipeCard recipe={receita} />
-                <BookmarkButton size={40} />
-              </View>
+              <RecipeCard key={receita.id} recipe={receita} />
             ))}
           </View>
         </View>

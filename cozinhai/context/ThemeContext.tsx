@@ -9,6 +9,7 @@ export const themeContext = createContext({
     cardBackground: "#FFFFFF",
     primary: "#007BFF",
     inactiveIcon: "#FFFFFF",
+    background: "#edf2f4",
   },
 
   logoStyle: {
