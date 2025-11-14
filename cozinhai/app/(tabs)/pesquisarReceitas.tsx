@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Text,
   FlatList,
+  LayoutRectangle,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { themeContext } from "../../context/ThemeContext";
@@ -20,15 +21,17 @@ const SPOONACULAR_API_KEY = ""
 export default function PesquisarReceitas() {
   const { colors } = useContext(themeContext);
 
-    const [searchType, setSearchType] = useState<"ingredients" | "recipes">("ingredients");
-    const [ingredient, setIngredient] = useState("");
-    const [ingredients, setIngredients] = useState<string[]>([]);
-    const [filtersVisible, setFiltersVisible] = useState(false);
-    const [filters, setFilters] = useState<string[]>([]);
-    const [recipeTitle, setRecipeTitle] = useState("");
-    const [searchResults, setSearchResults] = useState<IRecipe[]>([]);
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+  const [searchType, setSearchType] = useState<"ingredients" | "recipes">("ingredients");
+  const [ingredient, setIngredient] = useState("");
+  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [filtersVisible, setFiltersVisible] = useState(false);
+  const [filters, setFilters] = useState<string[]>([]);
+  const [recipeTitle, setRecipeTitle] = useState("");
+  const [searchResults, setSearchResults] = useState<IRecipe[]>([]);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [filterLayout, setFilterLayout] = useState<LayoutRectangle | null>(null)
+  const filterButtonRef = useRef<View>(null)
 
   const filterOptions = [
     "Sem Lactose",
@@ -57,89 +60,89 @@ export default function PesquisarReceitas() {
     );
   };
 
-    async function fetchByIngredients(ingredientsList: string[]) {
-        if (!SPOONACULAR_API_KEY) {
-            throw new Error("Chave da API Spoonacular não encontrada")
-        }
-        if (ingredientsList.length === 0) return []
+  async function fetchByIngredients(ingredientsList: string[]) {
+    if (!SPOONACULAR_API_KEY) {
+      throw new Error("Chave da API Spoonacular não encontrada")
+    }
+    if (ingredientsList.length === 0) return []
 
-        const ingredientsParam = ingredientsList.map((item) => item.trim()).join(",")
-        const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(
-            ingredientsParam
-        )}&number=12&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_API_KEY}`
+    const ingredientsParam = ingredientsList.map((item) => item.trim()).join(",")
+    const url = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${encodeURIComponent(
+      ingredientsParam
+    )}&number=12&ranking=1&ignorePantry=true&apiKey=${SPOONACULAR_API_KEY}`
 
-        const res = await fetch(url)
-        if (!res.ok) {
-            const text = await res.text()
-            throw new Error(`Erro de API Spoonacular: ${res.status} ${text}`)
-        }
-
-        //api devolve um array de receitas
-        const data = (await res.json()) as any[]
-
-        //mapeia o os itens do array recebido para a tipagem de IRecipe
-        return data.map((r) => ({
-            id: Number(r.id),
-            title: String(r.title),
-            image: r.image ? String(r.image) : ""
-        })) as IRecipe[]
+    const res = await fetch(url)
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`Erro de API Spoonacular: ${res.status} ${text}`)
     }
 
-    async function fetchByTitle(query: string) {
-        if (!SPOONACULAR_API_KEY) {
-            throw new Error("Chave da API Spoonacular não encontrada")
-        }
-        if (!query.trim()) return []
+    //api devolve um array de receitas
+    const data = (await res.json()) as any[]
 
-        const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(
-            query
-        )}&number=12&addRecipeInformation=false&apiKey=${SPOONACULAR_API_KEY}`
+    //mapeia o os itens do array recebido para a tipagem de IRecipe
+    return data.map((r) => ({
+      id: Number(r.id),
+      title: String(r.title),
+      image: r.image ? String(r.image) : ""
+    })) as IRecipe[]
+  }
 
-        const res = await fetch(url)
-        if (!res.ok) {
-            const text = await res.text()
-            throw new Error(`Erro de API Spoonacular: ${res.status} ${text}`)
-        }
-        const json = await res.json()
-
-        //mesma tratativa da função fetchByIngredients
-        const results = (json.results ?? []) as any
-        return results.map((r) => ({
-            id: Number(r.id),
-            title: String(r.title),
-            image: r.image ? String(r.image) : "",
-        })) as IRecipe[]
+  async function fetchByTitle(query: string) {
+    if (!SPOONACULAR_API_KEY) {
+      throw new Error("Chave da API Spoonacular não encontrada")
     }
+    if (!query.trim()) return []
 
-    async function handleSearch() {
-        setError(null)
-        setLoading(true)
-        setSearchResults([])
+    const url = `https://api.spoonacular.com/recipes/complexSearch?query=${encodeURIComponent(
+      query
+    )}&number=12&addRecipeInformation=false&apiKey=${SPOONACULAR_API_KEY}`
 
-        try {
-            let results: IRecipe[] = []
-            if (searchType === "ingredients") {
-                if (ingredients.length === 0) {
-                    setSearchResults([])
-                    setLoading(false)
-                    return
-                }
-                results = await fetchByIngredients(ingredients)
-            } else {
-                if (!recipeTitle.trim()) {
-                    setSearchResults([])
-                    setLoading(false)
-                    return
-                }
-                results = await fetchByTitle(recipeTitle)
-            }
-            setSearchResults(results.length ? results : [])
-        } catch (err: any) {
-            setError(err.message || "Erro na busca!")
-        } finally {
-            setLoading(false)
-        }
+    const res = await fetch(url)
+    if (!res.ok) {
+      const text = await res.text()
+      throw new Error(`Erro de API Spoonacular: ${res.status} ${text}`)
     }
+    const json = await res.json()
+
+    //mesma tratativa da função fetchByIngredients
+    const results = (json.results ?? []) as any
+    return results.map((r) => ({
+      id: Number(r.id),
+      title: String(r.title),
+      image: r.image ? String(r.image) : "",
+    })) as IRecipe[]
+  }
+
+  async function handleSearch() {
+    setError(null)
+    setLoading(true)
+    setSearchResults([])
+
+    try {
+      let results: IRecipe[] = []
+      if (searchType === "ingredients") {
+        if (ingredients.length === 0) {
+          setSearchResults([])
+          setLoading(false)
+          return
+        }
+        results = await fetchByIngredients(ingredients)
+      } else {
+        if (!recipeTitle.trim()) {
+          setSearchResults([])
+          setLoading(false)
+          return
+        }
+        results = await fetchByTitle(recipeTitle)
+      }
+      setSearchResults(results.length ? results : [])
+    } catch (err: any) {
+      setError(err.message || "Erro na busca!")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const styles = StyleSheet.create({
     safeArea: { flex: 1, backgroundColor: colors.background },
@@ -157,14 +160,15 @@ export default function PesquisarReceitas() {
       overflow: "hidden",
     },
     toggleButton: {
+      height: 65,
       flex: 1,
       paddingVertical: 10,
       alignItems: "center",
       justifyContent: "center",
     },
     activeButton: { backgroundColor: colors.darkBlue },
-    activeText: { color: "white", fontWeight: "bold" },
-    inactiveText: { color: "#555" },
+    activeText: { color: "white", fontWeight: "bold", fontSize: 12 },
+    inactiveText: { color: "#555", fontSize: 12 },
     inputRow: {
       flexDirection: "row",
       alignItems: "center",
@@ -202,13 +206,17 @@ export default function PesquisarReceitas() {
       paddingVertical: 5,
       gap: 4,
     },
-    filterMenu: {
+    filterMenuOverlay: {
+      position: "absolute",
       backgroundColor: "#4A6B82",
       borderRadius: 10,
       padding: 10,
-      marginTop: -10,
-      width: "80%",
-      alignSelf: "flex-end",
+      zIndex: 999,
+      elevation: 5, // Android
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
     },
     filterItem: {
       flexDirection: "row",
@@ -231,8 +239,9 @@ export default function PesquisarReceitas() {
       <FlatList
         data={searchResults}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <RecipeCard recipe={item} onPress={(recipe) => router.push(`../recipe/${recipe.id}`)}/>}
+        renderItem={({ item }) => <RecipeCard recipe={item} onPress={(recipe) => router.push(`../recipe/${recipe.id}`)} />}
         contentContainerStyle={{ alignItems: "center", paddingBottom: 120 }}
+        onScrollBeginDrag={() => setFiltersVisible(false)}
         ListHeaderComponent={
           <View style={styles.headerContainer}>
             <Logo />
@@ -293,8 +302,18 @@ export default function PesquisarReceitas() {
                     <Ionicons name="add" size={22} color="#1E5C76" />
                   </TouchableOpacity>
                   <TouchableOpacity
+                    ref={filterButtonRef}
                     style={styles.filterButton}
-                    onPress={() => setFiltersVisible(!filtersVisible)}
+                    onPress={() => {
+                      if (filterButtonRef.current) {
+                        filterButtonRef.current.measure(
+                          (fx, fy, width, height, px, py) => {
+                            setFilterLayout({ x: px, y: py, width, height })
+                            setFiltersVisible(!filtersVisible)
+                          }
+                        )
+                      }
+                    }}
                   >
                     <Ionicons name="filter" size={22} color="#1E5C76" />
                   </TouchableOpacity>
@@ -306,16 +325,19 @@ export default function PesquisarReceitas() {
                   </TouchableOpacity>
                 </View>
 
-                <View style={styles.chipsContainer}>
-                  {ingredients.map((item) => (
-                    <View key={item} style={styles.chip}>
-                      <Text>{item}</Text>
-                      <TouchableOpacity onPress={() => removeIngredient(item)}>
-                        <Ionicons name="close" size={16} color="#555" />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                </View>
+                {ingredients.length > 0 && (
+                  <View style={styles.chipsContainer}>
+                    {ingredients.map((item) => (
+                      <View key={item} style={styles.chip}>
+                        <Text>{item}</Text>
+                        <TouchableOpacity onPress={() => removeIngredient(item)}>
+                          <Ionicons name="close" size={16} color="#555" />
+                        </TouchableOpacity>
+                      </View>
+                    ))}
+                  </View>
+                )}
+
               </>
             ) : (
               <View style={styles.inputRow}>
@@ -327,8 +349,18 @@ export default function PesquisarReceitas() {
                 />
                 <Ionicons name="search" size={20} color="#1E5C76" />
                 <TouchableOpacity
+                  ref={filterButtonRef}
                   style={styles.filterButton}
-                  onPress={() => setFiltersVisible(!filtersVisible)}
+                  onPress={() => {
+                    if (filterButtonRef.current) {
+                      filterButtonRef.current.measure(
+                        (fx, fy, width, height, px, py) => {
+                          setFilterLayout({ x: px, y: py, width, height })
+                          setFiltersVisible(!filtersVisible)
+                        }
+                      )
+                    }
+                  }}
                 >
                   <Ionicons name="filter" size={22} color="#1E5C76" />
                 </TouchableOpacity>
@@ -341,35 +373,43 @@ export default function PesquisarReceitas() {
               </View>
             )}
 
-            {/* Filtros */}
-            {filtersVisible && (
-              <View style={styles.filterMenu}>
-                {filterOptions.map((f) => {
-                  const selected = filters.includes(f);
-                  return (
-                    <TouchableOpacity
-                      key={f}
-                      style={styles.filterItem}
-                      onPress={() => toggleFilter(f)}
-                    >
-                      <Ionicons
-                        name={selected ? "checkbox" : "square-outline"}
-                        size={18}
-                        color="white"
-                      />
-                      <Text style={styles.filterText}>{f}</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            )}
-
             {searchResults.length === 0 && (
               <Text style={styles.noResults}>Nenhum resultado encontrado</Text>
             )}
           </View>
         }
       />
+
+      {/* Filtros */}
+      {filtersVisible && filterLayout && (
+        <View style={[
+          styles.filterMenuOverlay,
+          {
+            top: filterLayout.y + filterLayout.height,
+            left: filterLayout.x,
+          }
+        ]}
+        >
+          {filterOptions.map((f) => {
+            const selected = filters.includes(f);
+            return (
+              <TouchableOpacity
+                key={f}
+                style={styles.filterItem}
+                onPress={() => toggleFilter(f)}
+              >
+                <Ionicons
+                  name={selected ? "checkbox" : "square-outline"}
+                  size={18}
+                  color="white"
+                />
+                <Text style={styles.filterText}>{f}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
     </SafeAreaView>
   );
 }
