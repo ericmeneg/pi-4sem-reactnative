@@ -3,43 +3,61 @@ import RecipeCard from "../../../components/RecipeCard";
 import { ScrollView, StyleSheet, View, SafeAreaView } from "react-native";
 import { Text } from "react-native-paper";
 import VoltarHeader from "../../../components/VoltarHeader";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { themeContext } from "../../../context/ThemeContext";
 import { globalStyles } from "../../../styles/globalStyles";
+import { useAuth } from "../../_layout";
+import { router } from "expo-router";
+
+const SPOONACULAR_API_KEY = ""
+
+async function getFavoriteRecipes(userId, token, limit, offSet) {
+  try {
+    const response = await fetch(
+      `https://pi-3sem-backend.onrender.com/user/${userId}/favorites?limit=${limit}&offset=${offSet}`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Chamada a rota da API de backend /user/userId/favorites falhou")
+    }
+    const favorites = await response.json()
+    return favorites
+  } catch (error) {
+    console.error(error);
+    return []
+  }
+}
 
 export default function LivroReceitas() {
-  const receitasDemo: IRecipe[] = [
-    {
-      id: 648348,
-      title: "Jalapeno Cornbread Stuffing",
-      image: "https://img.spoonacular.com/recipes/648348-556x370.jpg",
-    },
-    {
-      id: 796873,
-      title: "Yogurt Parfait",
-      image: "https://img.spoonacular.com/recipes/796873-556x370.jpg",
-    },
-    {
-      id: 634965,
-      title: "Bibimbab (Korean Rice w Vegetables & Beef)",
-      image: "https://img.spoonacular.com/recipes/634965-556x370.jpg",
-    },
-    {
-      id: 633668,
-      title: "Baked Lemon~Lime Chicken Wings",
-      image: "https://img.spoonacular.com/recipes/633668-556x370.jpg",
-    },
-    {
-      id: 642138,
-      title: "Easy Vegetable Fried Rice",
-      image: "https://img.spoonacular.com/recipes/642138-556x370.jpg",
-    },
-    {
-      id: 635345,
-      title: "Blue Cheese and Mushroom Turkey Burger",
-      image: "https://img.spoonacular.com/recipes/635345-556x370.jpg",
-    },
-  ];
+  const { user, token } = useAuth()
+  const [favoritos, setFavoritos] = useState<IRecipe[]>([])
+  useEffect(()=>{
+    async function loadFavoritos () {
+      const favIds = await getFavoriteRecipes(user.id, token, 10, 0)
+
+      if (!favIds.length){
+        setFavoritos([])
+        return
+      }
+
+      const idsString = favIds.map(f => f.recipeId).join(",")
+
+      const spoonacularRes = await fetch(
+        `https://api.spoonacular.com/recipes/informationBulk?ids=${idsString}&apiKey=${SPOONACULAR_API_KEY}`
+      )
+
+      const recipes = await spoonacularRes.json()
+      setFavoritos(recipes)
+    }
+
+    loadFavoritos()
+  }, [])
 
   const { colors } = useContext(themeContext);
 
@@ -78,10 +96,9 @@ export default function LivroReceitas() {
           <VoltarHeader />
 
           <Text style={styles.titulo}>Livro de Receitas</Text>
-
           <View style={styles.recipeList}>
-            {receitasDemo.map((receita) => (
-              <RecipeCard key={receita.id} recipe={receita} />
+            {favoritos.map((receita) => (
+              <RecipeCard key={receita.id} recipe={receita} onPress={(recipe) => router.push(`../../recipe/${recipe.id}`)} />
             ))}
           </View>
         </View>
