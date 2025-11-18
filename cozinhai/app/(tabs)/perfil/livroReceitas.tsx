@@ -37,11 +37,21 @@ async function getFavoriteRecipes(userId, token, limit, offSet) {
 export default function LivroReceitas() {
   const { user, token } = useAuth()
   const [favoritos, setFavoritos] = useState<IRecipe[]>([])
-  useEffect(()=>{
-    async function loadFavoritos () {
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState("")
+
+  async function loadFavoritos() {
+    setLoading(true)
+    setErrorMessage("")
+
+    try {
       const favIds = await getFavoriteRecipes(user.id, token, 10, 0)
 
-      if (!favIds.length){
+      if (!Array.isArray(favIds)) {
+        throw new Error("Retorno inesperado da API de backend")
+      }
+
+      if (!favIds.length) {
         setFavoritos([])
         return
       }
@@ -52,12 +62,25 @@ export default function LivroReceitas() {
         `https://api.spoonacular.com/recipes/informationBulk?ids=${idsString}&apiKey=${SPOONACULAR_API_KEY}`
       )
 
-      const recipes = await spoonacularRes.json()
-      setFavoritos(recipes)
-    }
+      if (!spoonacularRes.ok) {
+        throw new Error("Erro ao buscar as receitas da API Spoonacular")
+      }
 
-    loadFavoritos()
-  }, [])
+      const recipes = await spoonacularRes.json()
+
+      if (!Array.isArray(recipes)) {
+        throw new Error("Spoonacular retornou dados inválidos")
+      }
+      setFavoritos(recipes)
+    } catch (error) {
+      console.error("Erro ao carregar favoritos:", error)
+      setErrorMessage("Não foi possível carregar suas receitas favoritas. Pode ser que o servidor esteja iniciando, tente novamente daqui a um minuto.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { loadFavoritos() }, [])
 
   const { colors } = useContext(themeContext);
 
@@ -89,12 +112,32 @@ export default function LivroReceitas() {
     },
   });
 
+  if (loading) {
+    return (
+      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+        <Text>Carregando receitas... {"(pode demorar um pouco)"}</Text>
+      </SafeAreaView>
+    )
+  }
+  if (errorMessage) {
+    return (
+      <SafeAreaView style={{ flex: 1, alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <Text style={{ color: "red", textAlign: "center", marginBottom: 20 }}>
+          {errorMessage}
+        </Text>
+        <Text
+          style={{ color: colors.darkBlue, textDecorationLine: "underline" }}
+          onPress={loadFavoritos}>
+          Tentar novamente
+        </Text>
+      </SafeAreaView>
+    )
+  }
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <VoltarHeader />
-
           <Text style={styles.titulo}>Livro de Receitas</Text>
           <View style={styles.recipeList}>
             {favoritos.map((receita) => (
