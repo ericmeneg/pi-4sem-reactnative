@@ -1,4 +1,3 @@
-/* import { Link } from "expo-router"; */
 import {
   Image,
   ScrollView,
@@ -8,16 +7,16 @@ import {
   TouchableOpacity,
   Modal,
   FlatList,
-  SafeAreaView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useContext, useState, useEffect } from "react";
 import { themeContext } from "../../context/ThemeContext";
 import { globalStyles } from "../../styles/globalStyles";
 import Logo from "../../components/Logo";
 import { IRecipe } from "../../interfaces/recipe.interface";
-import { SPOONACULAR_API_KEY } from "@env";
 import RecipeCard from "../../components/RecipeCard";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Alimento {
   nome: string;
@@ -132,6 +131,9 @@ const mesesNome = [
   "Dezembro",
 ];
 
+// IMPORTANTE: Cole sua chave da API Spoonacular aqui
+const SPOONACULAR_API_KEY = "SUA_CHAVE_AQUI";
+
 function shuffleArray<T>(arr: T[], seed: number): T[] {
   let t = seed;
   const rng = () => {
@@ -148,62 +150,109 @@ function shuffleArray<T>(arr: T[], seed: number): T[] {
     .map(({ v }) => v);
 }
 
-async function getDailyRecipes(seed: number): Promise<IRecipe[]> {
-  const API_KEY = "";
-  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch";
+async function getDailyRecipes(): Promise<IRecipe[]> {
+  try {
+    if (!SPOONACULAR_API_KEY || SPOONACULAR_API_KEY === "SUA_CHAVE_AQUI") {
+      console.warn("API Key não configurada. Usando receitas de exemplo.");
+      // Retorna receitas de exemplo caso não tenha API key
+      return [
+        {
+          id: 715538,
+          title: "Bruschetta Style Pork & Pasta",
+          image: "https://spoonacular.com/recipeImages/715538-312x231.jpg",
+        },
+        {
+          id: 716429,
+          title: "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+          image: "https://spoonacular.com/recipeImages/716429-312x231.jpg",
+        },
+        {
+          id: 642103,
+          title: "Easy Chicken Tikka Masala",
+          image: "https://spoonacular.com/recipeImages/642103-312x231.jpg",
+        },
+      ];
+    }
 
-  const res = await fetch(`${baseUrl}?apiKey=${API_KEY}&number=30`);
-  const data = await res.json();
+    // Usa o endpoint de receitas aleatórias da Spoonacular
+    const baseUrl = "https://api.spoonacular.com/recipes/random";
+    const res = await fetch(
+      `${baseUrl}?apiKey=${SPOONACULAR_API_KEY}&number=3`
+    );
 
-  const allRecipes: IRecipe[] = data.results ?? [];
+    if (!res.ok) {
+      throw new Error(`Erro na API: ${res.status}`);
+    }
 
-  const shuffled = shuffleArray(allRecipes, seed);
+    const data = await res.json();
+    const recipes: IRecipe[] = (data.recipes ?? []).map((recipe: any) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+    }));
 
-  return shuffled.slice(0, 3);
-}
+    if (recipes.length === 0) {
+      console.warn("Nenhuma receita retornada pela API");
+      return [];
+    }
 
-function seededRand(seed: number) {
-  let t = seed
-  return function () {
-    t += 0x6D2B79F5
-    let x = t 
-    x = Math.imul(x ^ (x >>> 15), x | 1)
-    x ^= x + Math.imul(x ^ (x >>> 7), x | 61)
-    return ((x ^ (x >>> 14)) >>> 0) / 4294967296
+    return recipes;
+  } catch (error) {
+    console.error("Erro ao buscar receitas:", error);
+    // Retorna receitas de exemplo em caso de erro
+    return [
+      {
+        id: 715538,
+        title: "Bruschetta Style Pork & Pasta",
+        image: "https://spoonacular.com/recipeImages/715538-312x231.jpg",
+      },
+      {
+        id: 716429,
+        title: "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
+        image: "https://spoonacular.com/recipeImages/716429-312x231.jpg",
+      },
+      {
+        id: 642103,
+        title: "Easy Chicken Tikka Masala",
+        image: "https://spoonacular.com/recipeImages/642103-312x231.jpg",
+      },
+    ];
   }
-}
-
-function getDailySeeds(): number[] {
-  let today = new Date().toISOString().split("T")[0];
-  let baseSeed = parseInt(today.replace(/-/g, ""), 10);
-  const rng = seededRand(baseSeed)
-  const seeds: number[] = [];
-  while (seeds.length < 3) {
-    seeds.push(Math.floor(rng() * 5224));
-  }
-  return seeds;
 }
 
 export default function Home() {
-  const [mesSelecionado, setMesSelecionado] = useState<number | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const { colors } = useContext(themeContext);
-
+  
+  // Pega o mês atual (1-12) automaticamente
+  const mesAtual = new Date().getMonth() + 1;
+  
+  const [mesSelecionado, setMesSelecionado] = useState<number>(mesAtual);
+  const [modalVisible, setModalVisible] = useState(false);
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     async function loadRecipes() {
-      const todaySeed = parseInt(new Date().toISOString().split("T")[0].replace(/-/g, ""), 10);
-      const gotRecipes = await getDailyRecipes(todaySeed);
-      setRecipes(gotRecipes);
+      try {
+        setLoading(true);
+        setError(null);
+        const gotRecipes = await getDailyRecipes();
+        setRecipes(gotRecipes);
+      } catch (err) {
+        console.error("Erro ao carregar receitas:", err);
+        setError("Erro ao carregar receitas. Tente novamente mais tarde.");
+      } finally {
+        setLoading(false);
+      }
     }
     loadRecipes();
   }, []);
 
-
   const ingredientesDoMes = mesSelecionado
     ? alimentos
-      .filter((a) => a.meses.includes(mesSelecionado))
-      .map((a) => a.nome)
+        .filter((a) => a.meses.includes(mesSelecionado))
+        .map((a) => a.nome)
     : [];
 
   const styles = StyleSheet.create({
@@ -211,54 +260,6 @@ export default function Home() {
       flex: 1,
       gap: 40,
     },
-    header: {
-      paddingVertical: 25,
-      paddingHorizontal: 20,
-    },
-    mainTitle: {
-      fontWeight: "bold",
-      marginBottom: 5,
-    },
-    subTitle: {
-      fontSize: 14,
-    },
-    quickSearchButton: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginHorizontal: 20,
-      paddingVertical: 14,
-      paddingHorizontal: 20,
-      borderRadius: 12, // Forma sutilmente arredondada
-      gap: 10,
-      marginBottom: 30, // Espaço confortável após a busca
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 3,
-      elevation: 3,
-    },
-    quickSearchText: {
-      fontSize: 16,
-    },
-    shortcutsTitle: {
-      fontWeight: "bold",
-      paddingHorizontal: 20,
-      marginBottom: 10,
-      marginTop: 10,
-    },
-    shortcutsContainer: {
-      flexDirection: "row",
-      flexWrap: "wrap",
-      justifyContent: "space-between",
-      marginBottom: 30,
-      paddingHorizontal: 12,
-    },
-    dailyTitle: {
-      fontWeight: "bold",
-      marginBottom: 15,
-      paddingHorizontal: 20,
-    },
-
     main: {
       alignItems: "center",
       paddingTop: 25,
@@ -266,11 +267,6 @@ export default function Home() {
       gap: 20,
       marginBottom: 100,
     },
-    safe: {
-      flex: 1,
-      backgroundColor: "#F9FAFB",
-    },
-
     title: {
       fontSize: 24,
       fontWeight: "bold",
@@ -289,7 +285,11 @@ export default function Home() {
       shadowOpacity: 0.2,
       shadowRadius: 4,
     },
-    mesSelecionadoText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    mesSelecionadoText: { 
+      color: "#fff", 
+      fontWeight: "600", 
+      fontSize: 16 
+    },
     modalOverlay: {
       flex: 1,
       backgroundColor: "rgba(0,0,0,0.25)",
@@ -311,8 +311,14 @@ export default function Home() {
       shadowOpacity: 0.2,
       shadowRadius: 6,
     },
-    mesOption: { paddingVertical: 14, paddingHorizontal: 20 },
-    mesOptionText: { fontSize: 16, color: "#22577A" },
+    mesOption: { 
+      paddingVertical: 14, 
+      paddingHorizontal: 20 
+    },
+    mesOptionText: { 
+      fontSize: 16, 
+      color: "#22577A" 
+    },
     ingredientesContainer: {
       flexDirection: "row",
       flexWrap: "wrap",
@@ -339,6 +345,29 @@ export default function Home() {
       color: "#22577A",
       fontWeight: "500",
     },
+    loadingContainer: {
+      alignItems: "center",
+      justifyContent: "center",
+      paddingVertical: 40,
+    },
+    loadingText: {
+      marginTop: 12,
+      color: colors.darkBlue,
+      fontSize: 16,
+    },
+    errorText: {
+      color: "#DC2626",
+      fontSize: 16,
+      textAlign: "center",
+      paddingHorizontal: 20,
+    },
+    emptyText: {
+      color: colors.secondaryText,
+      fontSize: 16,
+      textAlign: "center",
+      paddingHorizontal: 20,
+      fontStyle: "italic",
+    },
   });
 
   return (
@@ -346,15 +375,35 @@ export default function Home() {
       <View style={styles.container}>
         <Logo />
 
+        {/* Seção de Recomendações Diárias */}
         <View style={styles.main} testID="recomendaçõesSection">
           <Text style={styles.title}>Recomendações Diárias!</Text>
-          <View testID="recipeCards" style={{ alignItems: "center" }}>
-            {recipes.map((recipe) => (
-              <RecipeCard key={recipe.id} recipe={recipe} onPress={(recipe) => router.push(`../recipe/${recipe.id}`)} />
-            ))}
-          </View>
+          
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.darkBlue} />
+              <Text style={styles.loadingText}>Carregando receitas...</Text>
+            </View>
+          ) : error ? (
+            <Text style={styles.errorText}>{error}</Text>
+          ) : recipes.length === 0 ? (
+            <Text style={styles.emptyText}>
+              Nenhuma receita disponível no momento
+            </Text>
+          ) : (
+            <View testID="recipeCards" style={{ alignItems: "center", gap: 20 }}>
+              {recipes.map((recipe) => (
+                <RecipeCard
+                  key={recipe.id}
+                  recipe={recipe}
+                  onPress={(recipe) => router.push(`../recipe/${recipe.id}`)}
+                />
+              ))}
+            </View>
+          )}
         </View>
 
+        {/* Seção de Ingredientes Sazonais */}
         <View style={styles.main} testID="sazonaisSection">
           <Text style={styles.title}>Ingredientes da Época</Text>
 
@@ -370,14 +419,21 @@ export default function Home() {
           </TouchableOpacity>
 
           <View style={styles.ingredientesContainer}>
-            {ingredientesDoMes.map((ingrediente) => (
-              <View style={styles.ingredienteTag} key={ingrediente}>
-                <Text style={styles.ingredienteText}>{ingrediente}</Text>
-              </View>
-            ))}
+            {ingredientesDoMes.length === 0 ? (
+              <Text style={styles.emptyText}>
+                Nenhum ingrediente disponível para este mês
+              </Text>
+            ) : (
+              ingredientesDoMes.map((ingrediente) => (
+                <View style={styles.ingredienteTag} key={ingrediente}>
+                  <Text style={styles.ingredienteText}>{ingrediente}</Text>
+                </View>
+              ))
+            )}
           </View>
         </View>
 
+        {/* Modal de Seleção de Mês */}
         <Modal
           visible={modalVisible}
           transparent
@@ -401,7 +457,15 @@ export default function Home() {
                       setModalVisible(false);
                     }}
                   >
-                    <Text style={styles.mesOptionText}>{item}</Text>
+                    <Text 
+                      style={[
+                        styles.mesOptionText,
+                        mesSelecionado === index + 1 && { fontWeight: "bold" }
+                      ]}
+                    >
+                      {item}
+                      {mesSelecionado === index + 1 && " ✓"}
+                    </Text>
                   </TouchableOpacity>
                 )}
               />
