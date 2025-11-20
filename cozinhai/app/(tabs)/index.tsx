@@ -132,7 +132,7 @@ const mesesNome = [
 ];
 
 // IMPORTANTE: Cole sua chave da API Spoonacular aqui
-const SPOONACULAR_API_KEY = "SUA_CHAVE_AQUI";
+const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 
 function shuffleArray<T>(arr: T[], seed: number): T[] {
   let t = seed;
