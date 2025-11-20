@@ -16,7 +16,7 @@ import RecipeCard from "../../components/RecipeCard";
 import { IRecipe } from "../../interfaces/recipe.interface";
 import { router } from "expo-router";
 
-const SPOONACULAR_API_KEY = ""
+const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 
 export default function PesquisarReceitas() {
   const { colors } = useContext(themeContext);
