@@ -17,6 +17,7 @@ import { IRecipe } from "../../interfaces/recipe.interface";
 import { useEffect, useState, useContext } from "react";
 import { themeContext } from "../../context/ThemeContext";
 import VoltarHeader from "../../components/VoltarHeader";
+import FormularioComentario from "../../components/FormularioComentario";
 
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 const API_URL = "https://pi-3sem-backend.onrender.com";
@@ -367,6 +368,7 @@ export default function Receita() {
 
         {/* Seção de Reviews */}
         <View style={styles.reviewsSection}>
+            <FormularioComentario recipe={recipe}/>
           <Text style={styles.reviewsTitle}>
             Avaliações {reviews.length > 0 ? `(${reviews.length})` : ""}
           </Text>

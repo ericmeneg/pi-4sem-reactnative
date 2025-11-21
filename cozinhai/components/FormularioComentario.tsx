@@ -2,6 +2,12 @@ import { useState } from "react";
 import { Alert, Pressable, TouchableOpacity, View, Image } from "react-native";
 import { Avatar, Button, Card, Icon, Modal, Portal, Text, TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker"
+import { useAuth } from "../app/_layout";
+import { IRecipe } from "../interfaces/recipe.interface";
+
+interface FormularioComentarioProps {
+    recipe: IRecipe
+}
 
 async function pedirPermissao() {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
@@ -12,7 +18,7 @@ async function pedirPermissao() {
     return true
 }
 
-export default function FormularioComentario() {
+export default function FormularioComentario({ recipe }: FormularioComentarioProps) {
     //controlam o conteúdo dos campos do formulário
     const [comentarioString, setComentarioString] = useState("")
     const [foto, setFoto] = useState<string | null>(null)
@@ -23,6 +29,8 @@ export default function FormularioComentario() {
 
     //controla a visibilidade do modal de visualização da foto tirada
     const [modalVisivel, setModalVisivel] = useState(false)
+
+    const { user, token } = useAuth()
 
     async function tirarFoto() {
         const temPermissao = await pedirPermissao()
@@ -40,12 +48,37 @@ export default function FormularioComentario() {
         }
     }
 
+    async function enviarComentario() {
+        const url = `https://pi-3sem-backend.onrender.com/user/${user.id}/${recipe.id}/reviews`;
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ grade: pontuacao, comment: comentarioString, imageBase64: foto }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(
+                    `Requisição falhou. Status:${response.status} Mensagem de erro: ${errorText}`
+                );
+            }
+            return await response.json();
+        } catch (err) {
+            console.error("Erro ao criar comentário:", err);
+            throw err;
+        }
+    }
+
     return (
         <View style={{ maxWidth: 325 }}>
             <Card mode="contained" >
                 <Card.Content>
                     <Card.Title titleStyle={{ fontSize: 14 }} title="Deixe sua opinião!" left={() => <Avatar.Icon icon="comment-plus-outline" size={48} style={{ backgroundColor: 'teal', marginLeft: -10 }} />} />
-
                     <TextInput mode="outlined"
                         activeOutlineColor="#22577A"
                         label="Escreva um comentário"
@@ -99,6 +132,13 @@ export default function FormularioComentario() {
                         </>
 
                     )}
+                    <Button
+                        mode="contained-tonal"
+                        onPress={enviarComentario}
+                        style={{ marginBottom: 10, backgroundColor: "#22557A" }}
+                        labelStyle={{ color: "white" }}>
+                        Enviar
+                    </Button>
                     <Portal>
                         <Modal
                             visible={modalVisivel}
