@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Pressable, TouchableOpacity, View, Image } from "react-native";
-import { Avatar, Button, Card, Icon, Modal, Portal, Text, TextInput } from "react-native-paper";
+import { ActivityIndicator, Avatar, Button, Card, Icon, Modal, Portal, Text, TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker"
 import { useAuth } from "../app/_layout";
 import { IRecipe } from "../interfaces/recipe.interface";
@@ -23,6 +23,9 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
     const [comentarioString, setComentarioString] = useState("")
     const [foto, setFoto] = useState<string | null>(null)
     const [pontuacao, setPontuacao] = useState(0)
+    const [loading, setLoading] = useState(false)
+    const [loadingInicial, setLoadingInicial] = useState(true)
+    const [comentarioExistente, setComentarioExistente] = useState<any | null>(null)
 
     //controla a altura do text input do comentário
     const [altura, setAltura] = useState(40)
@@ -31,6 +34,44 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
     const [modalVisivel, setModalVisivel] = useState(false)
 
     const { user, token } = useAuth()
+
+    useEffect(() => {
+        async function fetchComentario() {
+            try {
+                const url = `https://pi-3sem-backend.onrender.com/user/${user.id}/reviews`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro ao buscar reviews: ${response.status}`);
+                }
+
+                const todasReviews = await response.json();
+
+                const reviewDaReceita = todasReviews.find(
+                    (review: any) => review.recipeId == recipe.id
+                );
+
+                if (reviewDaReceita) {
+                    setComentarioExistente(reviewDaReceita);
+                } else {
+                    setComentarioExistente(null);
+                }
+
+            } catch (err) {
+                console.log("Erro ao buscar comentário:", err);
+            } finally {
+                setLoadingInicial(false);
+            }
+        }
+
+        fetchComentario();
+    }, [user.id, token, recipe.id]);
+
 
     async function tirarFoto() {
         const temPermissao = await pedirPermissao()
@@ -49,6 +90,10 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
     }
 
     async function enviarComentario() {
+        if (loading) return
+
+        setLoading(true)
+
         const url = `https://pi-3sem-backend.onrender.com/user/${user.id}/${recipe.id}/reviews`;
 
         try {
@@ -67,11 +112,66 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
                     `Requisição falhou. Status:${response.status} Mensagem de erro: ${errorText}`
                 );
             }
-            return await response.json();
+            const data = await response.json()
+            setComentarioExistente(data)
+            Alert.alert("Comentário enviado com sucesso!")
         } catch (err) {
-            console.error("Erro ao criar comentário:", err);
-            throw err;
+            Alert.alert("Erro ao enviar o comentário", "Tente novamente");
+        } finally {
+            setLoading(false)
         }
+    }
+
+    if (loadingInicial) {
+        return (
+            <View style={{ maxWidth: 325 }}>
+                <Card mode="contained">
+                    <Card.Content style={{ alignItems: "center", paddingVertical: 30 }}>
+                        <ActivityIndicator color="#22577A" size="large" />
+                        <Text style={{ marginTop: 10 }}>Carregando...</Text>
+                    </Card.Content>
+                </Card>
+            </View>
+        );
+    }
+
+    if (comentarioExistente && !loadingInicial) {
+        return (
+            <View style={{ maxWidth: 325 }}>
+                <Card mode="contained">
+                    <Card.Content>
+                        <Card.Title
+                            title="Seu comentário"
+                            left={() => (
+                                <Avatar.Icon
+                                    icon="comment-check-outline"
+                                    size={48}
+                                    style={{ backgroundColor: "teal", marginLeft: -10 }}
+                                />
+                            )} />
+                        <Text style={{ marginTop: 10, marginBottom: 10 }}>
+                            {comentarioExistente.comment}
+                        </Text>
+
+                        <View style={{ flexDirection: "row", justifyContent: "center" }}>
+                            {Array.from({ length: 5 }, (_, i) => (  
+                                    <Icon
+                                        key={i}
+                                        source={i < comentarioExistente.pontuacao ? "star" : "star-outline"}
+                                        size={30}
+                                        color={i < comentarioExistente.pontuacao ? "#22577A" : "#CCC"}
+                                    />
+                            ))}
+                        </View>
+                        {comentarioExistente.imageBase64 && (
+                            <Image
+                                source={{ uri: comentarioExistente.imageBase64 }}
+                                style={{ width: 150, height: 150, borderRadius: 10, alignSelf: "center", marginTop: 10 }} />
+                        )}
+                    </Card.Content>
+                </Card>
+            </View>
+        )
     }
 
     return (
@@ -135,6 +235,8 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
                     <Button
                         mode="contained-tonal"
                         onPress={enviarComentario}
+                        disabled={loading}
+                        loading={loading}
                         style={{ marginBottom: 10, backgroundColor: "#22557A" }}
                         labelStyle={{ color: "white" }}>
                         Enviar
