@@ -35,40 +35,33 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
 
     const { user, token } = useAuth()
 
-    useEffect(() => {
-        async function fetchComentario() {
-            try {
-                const url = `https://pi-3sem-backend.onrender.com/user/${user.id}/reviews`;
+    async function fetchComentario() {
+        try {
+            const url = `https://pi-3sem-backend.onrender.com/user/${user.id}/reviews`;
 
-                const response = await fetch(url, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro ao buscar reviews: ${response.status}`);
+            const response = await fetch(url, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
                 }
+            });
 
-                const todasReviews = await response.json();
+            if (!response.ok) throw new Error("Erro ao buscar reviews");
 
-                const reviewDaReceita = todasReviews.find(
-                    (review: any) => review.recipeId == recipe.id
-                );
+            const todasReviews = await response.json();
 
-                if (reviewDaReceita) {
-                    setComentarioExistente(reviewDaReceita);
-                } else {
-                    setComentarioExistente(null);
-                }
+            const reviewDaReceita = todasReviews.find(
+                (review: any) => review.recipeId == recipe.id
+            );
 
-            } catch (err) {
-                console.log("Erro ao buscar comentário:", err);
-            } finally {
-                setLoadingInicial(false);
-            }
+            setComentarioExistente(reviewDaReceita || null);
+        } catch (error) {
+            console.log("Erro ao buscar comentário:", error);
+        } finally {
+            setLoadingInicial(false);
         }
+    }
 
+    useEffect(() => {
         fetchComentario();
     }, [user.id, token, recipe.id]);
 
@@ -112,8 +105,7 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
                     `Requisição falhou. Status:${response.status} Mensagem de erro: ${errorText}`
                 );
             }
-            const data = await response.json()
-            setComentarioExistente(data)
+            await fetchComentario()
             Alert.alert("Comentário enviado com sucesso!")
         } catch (err) {
             Alert.alert("Erro ao enviar o comentário", "Tente novamente");
@@ -124,7 +116,7 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
 
     if (loadingInicial) {
         return (
-            <View style={{ maxWidth: 325 }}>
+            <View style={{ width: "100%" }}>
                 <Card mode="contained">
                     <Card.Content style={{ alignItems: "center", paddingVertical: 30 }}>
                         <ActivityIndicator color="#22577A" size="large" />
@@ -137,7 +129,7 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
 
     if (comentarioExistente && !loadingInicial) {
         return (
-            <View style={{ maxWidth: 325 }}>
+            <View style={{ width: "100%" }}>
                 <Card mode="contained">
                     <Card.Content>
                         <Card.Title
@@ -157,9 +149,9 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
                             {Array.from({ length: 5 }, (_, i) => (  
                                     <Icon
                                         key={i}
-                                        source={i < comentarioExistente.pontuacao ? "star" : "star-outline"}
+                                        source={i < comentarioExistente.grade ? "star" : "star-outline"}
                                         size={30}
-                                        color={i < comentarioExistente.pontuacao ? "#22577A" : "#CCC"}
+                                        color={i < comentarioExistente.grade ? "#22577A" : "#CCC"}
                                     />
                             ))}
                         </View>
@@ -175,7 +167,7 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
     }
 
     return (
-        <View style={{ maxWidth: 325 }}>
+        <View style={{ width: "100%" }}>
             <Card mode="contained" >
                 <Card.Content>
                     <Card.Title titleStyle={{ fontSize: 14 }} title="Deixe sua opinião!" left={() => <Avatar.Icon icon="comment-plus-outline" size={48} style={{ backgroundColor: 'teal', marginLeft: -10 }} />} />
