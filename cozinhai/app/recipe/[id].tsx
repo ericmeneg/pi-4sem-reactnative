@@ -18,6 +18,8 @@ import { useEffect, useState, useContext } from "react";
 import { themeContext } from "../../context/ThemeContext";
 import VoltarHeader from "../../components/VoltarHeader";
 import FormularioComentario from "../../components/FormularioComentario";
+import BookmarkButton from "../../components/BookmarkButton";
+import { useFavorites } from "../../hooks/useFavorites";
 
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 const API_URL = "https://pi-3sem-backend.onrender.com";
@@ -30,7 +32,6 @@ interface ReviewFromAPI {
   imageBase64?: string;
 }
 
-// Função para buscar receita da API Spoonacular
 async function fetchRecipe(id: string | string[]): Promise<IRecipe | null> {
   try {
     if (!SPOONACULAR_API_KEY) {
@@ -67,7 +68,6 @@ async function fetchRecipe(id: string | string[]): Promise<IRecipe | null> {
   }
 }
 
-// Função para buscar reviews do backend
 async function fetchReviews(
   recipeId: string,
   limit: number = 10,
@@ -79,7 +79,6 @@ async function fetchReviews(
     );
 
     if (!response.ok) {
-      // Se retornar 404, significa que não há reviews ainda
       if (response.status === 404) {
         console.log("ℹ️ Nenhum review encontrado para esta receita");
         return { reviews: [], hasMore: false };
@@ -89,7 +88,6 @@ async function fetchReviews(
 
     const data = await response.json();
     
-    // A API retorna um array direto
     const reviews: IComment[] = Array.isArray(data)
       ? data.map((review: ReviewFromAPI) => ({
           userId: review.userId,
@@ -102,7 +100,6 @@ async function fetchReviews(
 
     console.log("✅ Reviews carregados:", reviews.length);
 
-    // Verifica se há mais reviews (se retornou a quantidade máxima, provavelmente há mais)
     const hasMore = reviews.length === limit;
 
     return { reviews, hasMore };
@@ -112,7 +109,6 @@ async function fetchReviews(
   }
 }
 
-// Função para formatar a data
 function formatDate(date: Date): string {
   const day = date.getDate().toString().padStart(2, "0");
   const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -123,19 +119,20 @@ function formatDate(date: Date): string {
 export default function Receita() {
   const { id } = useLocalSearchParams();
   const { colors } = useContext(themeContext);
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [recipe, setRecipe] = useState<IRecipe | null>(null);
   const [reviews, setReviews] = useState<IComment[]>([]);
   const [loadingRecipe, setLoadingRecipe] = useState(true);
   const [loadingReviews, setLoadingReviews] = useState(true);
   const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
+  const [loadingFavorite, setLoadingFavorite] = useState(false);
   const [offset, setOffset] = useState(0);
   const [hasMoreReviews, setHasMoreReviews] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const REVIEWS_PER_PAGE = 10;
 
-  // Carrega a receita
   useEffect(() => {
     async function loadRecipe() {
       try {
@@ -161,7 +158,6 @@ export default function Receita() {
     }
   }, [id]);
 
-  // Carrega os reviews iniciais
   useEffect(() => {
     async function loadReviews() {
       try {
@@ -186,7 +182,6 @@ export default function Receita() {
     }
   }, [id, loadingRecipe]);
 
-  // Carrega mais reviews
   const loadMoreReviews = async () => {
     if (loadingMoreReviews || !hasMoreReviews) return;
 
@@ -209,6 +204,14 @@ export default function Receita() {
     } finally {
       setLoadingMoreReviews(false);
     }
+  };
+
+  const handleFavoritePress = async () => {
+    if (!recipe) return;
+    
+    setLoadingFavorite(true);
+    await toggleFavorite(recipe.id, recipe.title, recipe.image);
+    setLoadingFavorite(false);
   };
 
   const styles = StyleSheet.create({
@@ -246,6 +249,13 @@ export default function Receita() {
       gap: 20,
       paddingBottom: 40,
     },
+    headerRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: "100%",
+      paddingHorizontal: 10,
+    },
     receitaHeader: {
       flexDirection: "row",
       gap: 30,
@@ -253,6 +263,14 @@ export default function Receita() {
       justifyContent: "space-around",
       flexWrap: "wrap",
       marginBottom: 20,
+    },
+    imageContainer: {
+      position: "relative",
+    },
+    favoriteButtonContainer: {
+      position: "absolute",
+      top: 8,
+      right: 8,
     },
     receitaDiv: {
       gap: 40,
@@ -319,7 +337,6 @@ export default function Receita() {
     },
   });
 
-  // Loading da receita
   if (loadingRecipe) {
     return (
       <ScrollView style={styles.container}>
@@ -332,7 +349,6 @@ export default function Receita() {
     );
   }
 
-  // Erro ao carregar
   if (error || !recipe) {
     return (
       <ScrollView style={styles.container}>
@@ -350,25 +366,33 @@ export default function Receita() {
     <ScrollView style={styles.container}>
       <View style={styles.main}>
         <Logo />
-        <VoltarHeader />
+        
+        <View style={styles.headerRow}>
+          <VoltarHeader />
+          <BookmarkButton
+            isFavorite={isFavorite(recipe.id)}
+            onPress={handleFavoritePress}
+            loading={loadingFavorite}
+            size={32}
+          />
+        </View>
 
         <View style={styles.receitaDiv}>
-          {/* Header da Receita */}
           <View style={styles.receitaHeader}>
-            <Image
-              source={{ uri: recipe.image }}
-              style={{ width: 130, height: 130, borderRadius: 8 }}
-            />
+            <View style={styles.imageContainer}>
+              <Image
+                source={{ uri: recipe.image }}
+                style={{ width: 130, height: 130, borderRadius: 8 }}
+              />
+            </View>
             <ReceitaInfo recipe={recipe} />
           </View>
 
-          {/* Steps da Receita */}
           <ReceitaSteps recipe={recipe} />
         </View>
 
-        {/* Seção de Reviews */}
         <View style={styles.reviewsSection}>
-            <FormularioComentario recipe={recipe}/>
+          <FormularioComentario recipe={recipe} />
           <Text style={styles.reviewsTitle}>
             Avaliações {reviews.length > 0 ? `(${reviews.length})` : ""}
           </Text>
@@ -425,7 +449,6 @@ export default function Receita() {
                 </Card>
               ))}
 
-              {/* Botão Carregar Mais */}
               {hasMoreReviews && (
                 <TouchableOpacity
                   style={[
@@ -445,7 +468,6 @@ export default function Receita() {
                 </TouchableOpacity>
               )}
 
-              {/* Mensagem de todos carregados */}
               {!hasMoreReviews && reviews.length > 0 && (
                 <Text style={styles.allLoadedText}>
                   Todas as avaliações foram carregadas! ✨

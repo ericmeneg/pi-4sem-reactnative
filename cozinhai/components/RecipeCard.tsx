@@ -1,9 +1,8 @@
-import { StyleSheet, View, TouchableOpacity, Image, Dimensions } from "react-native";
-import { Text } from "react-native-paper";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { IRecipe } from "../interfaces/recipe.interface";
+import { useFavorites } from "../hooks/useFavorites";
 import BookmarkButton from "./BookmarkButton";
-import { useContext } from "react";
-import { themeContext } from "../context/ThemeContext";
+import { useState } from "react";
 
 interface RecipeCardProps {
   recipe: IRecipe;
@@ -11,46 +10,42 @@ interface RecipeCardProps {
 }
 
 export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
-  const { colors } = useContext(themeContext);
-  const screenWidth = Dimensions.get("window").width;
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const [loading, setLoading] = useState(false);
 
-  const CARD_WIDTH = screenWidth * 0.92;
-  const IMAGE_SIZE = screenWidth * 0.22;
+  const handleFavoritePress = async (e: any) => {
+    e.stopPropagation();
+    setLoading(true);
+    await toggleFavorite(recipe.id, recipe.title, recipe.image);
+    setLoading(false);
+  };
 
-  const TITLE_FONT = 16; // tamanho padronizado, bom em todos os celulares
-
-  const handlePress = () => onPress?.(recipe);
+  const handleCardPress = () => {
+    if (onPress) {
+      onPress(recipe);
+    }
+  };
 
   return (
     <TouchableOpacity
-      onPress={handlePress}
-      activeOpacity={0.85}
-      style={[
-        styles.card,
-        { width: CARD_WIDTH, borderColor: colors.darkBlue }
-      ]}
+      style={styles.card}
+      onPress={handleCardPress}
+      activeOpacity={0.8}
     >
-      <Image
-        source={{ uri: recipe.image }}
-        style={[styles.image, { width: IMAGE_SIZE, height: IMAGE_SIZE }]}
-      />
-
-      <View style={styles.infoContainer}>
-        <Text
-          style={[
-            styles.title,
-            {
-              fontSize: TITLE_FONT,
-              lineHeight: TITLE_FONT * 1.2,
-              color: colors.darkBlue,
-            },
-          ]}
-          numberOfLines={2}
-        >
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: recipe.image }} style={styles.image} />
+        <View style={styles.favoriteButtonContainer}>
+          <BookmarkButton
+            isFavorite={isFavorite(recipe.id)}
+            onPress={handleFavoritePress}
+            loading={loading}
+          />
+        </View>
+      </View>
+      <View style={styles.textContainer}>
+        <Text style={styles.title} numberOfLines={2}>
           {recipe.title}
         </Text>
-
-        <BookmarkButton size={24} />
       </View>
     </TouchableOpacity>
   );
@@ -58,31 +53,35 @@ export default function RecipeCard({ recipe, onPress }: RecipeCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: "row",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderWidth: 2,
-    borderRadius: 16,
-    backgroundColor: "#FFF",
-    alignItems: "center",
-    marginVertical: 6,
-  },
-
-  image: {
+    width: 280,
+    backgroundColor: "#fff",
     borderRadius: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-
-  infoContainer: {
-    flex: 1,
-    marginLeft: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  imageContainer: {
+    position: "relative",
   },
-
+  image: {
+    width: "100%",
+    height: 180,
+    resizeMode: "cover",
+  },
+  favoriteButtonContainer: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+  },
+  textContainer: {
+    padding: 12,
+  },
   title: {
+    fontSize: 16,
     fontWeight: "600",
-    flexShrink: 1,
-    maxWidth: "75%",
+    color: "#22577A",
   },
 });
