@@ -131,7 +131,6 @@ const mesesNome = [
   "Dezembro",
 ];
 
-// IMPORTANTE: Cole sua chave da API Spoonacular aqui
 const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 
 function shuffleArray<T>(arr: T[], seed: number): T[] {
@@ -150,82 +149,32 @@ function shuffleArray<T>(arr: T[], seed: number): T[] {
     .map(({ v }) => v);
 }
 
-async function getDailyRecipes(): Promise<IRecipe[]> {
-  try {
-    if (!SPOONACULAR_API_KEY || SPOONACULAR_API_KEY === "SUA_CHAVE_AQUI") {
-      console.warn("API Key não configurada. Usando receitas de exemplo.");
-      // Retorna receitas de exemplo caso não tenha API key
-      return [
-        {
-          id: 715538,
-          title: "Bruschetta Style Pork & Pasta",
-          image: "https://spoonacular.com/recipeImages/715538-312x231.jpg",
-        },
-        {
-          id: 716429,
-          title: "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
-          image: "https://spoonacular.com/recipeImages/716429-312x231.jpg",
-        },
-        {
-          id: 642103,
-          title: "Easy Chicken Tikka Masala",
-          image: "https://spoonacular.com/recipeImages/642103-312x231.jpg",
-        },
-      ];
-    }
+async function getDailyRecipes(seed: number): Promise<IRecipe[]> {
+  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch"
+  const res = await fetch(`${baseUrl}?apiKey=${SPOONACULAR_API_KEY}&number=30`)
+  const data = await res.json()
+  const allRecipes: IRecipe[] = data.results ?? []
+  const shuffled = shuffleArray(allRecipes, seed)
+  return shuffled.slice(0, 3)
+}
 
-    // Usa o endpoint de receitas aleatórias da Spoonacular
-    const baseUrl = "https://api.spoonacular.com/recipes/random";
-    const res = await fetch(
-      `${baseUrl}?apiKey=${SPOONACULAR_API_KEY}&number=3`
-    );
-
-    if (!res.ok) {
-      throw new Error(`Erro na API: ${res.status}`);
-    }
-
-    const data = await res.json();
-    const recipes: IRecipe[] = (data.recipes ?? []).map((recipe: any) => ({
-      id: recipe.id,
-      title: recipe.title,
-      image: recipe.image,
-    }));
-
-    if (recipes.length === 0) {
-      console.warn("Nenhuma receita retornada pela API");
-      return [];
-    }
-
-    return recipes;
-  } catch (error) {
-    console.error("Erro ao buscar receitas:", error);
-    // Retorna receitas de exemplo em caso de erro
-    return [
-      {
-        id: 715538,
-        title: "Bruschetta Style Pork & Pasta",
-        image: "https://spoonacular.com/recipeImages/715538-312x231.jpg",
-      },
-      {
-        id: 716429,
-        title: "Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs",
-        image: "https://spoonacular.com/recipeImages/716429-312x231.jpg",
-      },
-      {
-        id: 642103,
-        title: "Easy Chicken Tikka Masala",
-        image: "https://spoonacular.com/recipeImages/642103-312x231.jpg",
-      },
-    ];
+function seededRand(seed: number) {
+  let t = seed
+  return function () {
+    t += 0x6D2B79F5
+    let x = t
+    x = Math.imul(x ^ (x >>> 15), x | 1)
+    x ^= x + Math.imul(x ^ (x >>> 7), x | 61)
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296
   }
 }
 
 export default function Home() {
   const { colors } = useContext(themeContext);
-  
+
   // Pega o mês atual (1-12) automaticamente
   const mesAtual = new Date().getMonth() + 1;
-  
+
   const [mesSelecionado, setMesSelecionado] = useState<number>(mesAtual);
   const [modalVisible, setModalVisible] = useState(false);
   const [recipes, setRecipes] = useState<IRecipe[]>([]);
@@ -235,15 +184,13 @@ export default function Home() {
   useEffect(() => {
     async function loadRecipes() {
       try {
-        setLoading(true);
-        setError(null);
-        const gotRecipes = await getDailyRecipes();
+        const todaySeed = parseInt(new Date().toISOString().split("T")[0].replace(/-/g, ""), 10);
+        const gotRecipes = await getDailyRecipes(todaySeed);
         setRecipes(gotRecipes);
       } catch (err) {
-        console.error("Erro ao carregar receitas:", err);
-        setError("Erro ao carregar receitas. Tente novamente mais tarde.");
+        setError("Falha ao carregar receitas.")
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
     }
     loadRecipes();
@@ -251,8 +198,8 @@ export default function Home() {
 
   const ingredientesDoMes = mesSelecionado
     ? alimentos
-        .filter((a) => a.meses.includes(mesSelecionado))
-        .map((a) => a.nome)
+      .filter((a) => a.meses.includes(mesSelecionado))
+      .map((a) => a.nome)
     : [];
 
   const styles = StyleSheet.create({
@@ -285,10 +232,10 @@ export default function Home() {
       shadowOpacity: 0.2,
       shadowRadius: 4,
     },
-    mesSelecionadoText: { 
-      color: "#fff", 
-      fontWeight: "600", 
-      fontSize: 16 
+    mesSelecionadoText: {
+      color: "#fff",
+      fontWeight: "600",
+      fontSize: 16
     },
     modalOverlay: {
       flex: 1,
@@ -311,13 +258,13 @@ export default function Home() {
       shadowOpacity: 0.2,
       shadowRadius: 6,
     },
-    mesOption: { 
-      paddingVertical: 14, 
-      paddingHorizontal: 20 
+    mesOption: {
+      paddingVertical: 14,
+      paddingHorizontal: 20
     },
-    mesOptionText: { 
-      fontSize: 16, 
-      color: "#22577A" 
+    mesOptionText: {
+      fontSize: 16,
+      color: "#22577A"
     },
     ingredientesContainer: {
       flexDirection: "row",
@@ -378,7 +325,7 @@ export default function Home() {
         {/* Seção de Recomendações Diárias */}
         <View style={styles.main} testID="recomendaçõesSection">
           <Text style={styles.title}>Recomendações Diárias!</Text>
-          
+
           {loading ? (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={colors.darkBlue} />
@@ -457,7 +404,7 @@ export default function Home() {
                       setModalVisible(false);
                     }}
                   >
-                    <Text 
+                    <Text
                       style={[
                         styles.mesOptionText,
                         mesSelecionado === index + 1 && { fontWeight: "bold" }
