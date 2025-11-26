@@ -12,7 +12,16 @@ interface FormularioComentarioProps {
 async function pedirPermissao() {
     const { status } = await ImagePicker.requestCameraPermissionsAsync()
     if (status !== 'granted') {
-        Alert.alert("Permissão negada", "Precisamos de acesso a câmera para que você possa adicionar fotos ao seu comentário (fotos são opcionais)")
+        Alert.alert("Permissão negada", "Precisamos de acesso a câmera para que você possa adicionar fotos ao seu comentário dessa formma (fotos são opcionais)")
+        return false
+    }
+    return true
+}
+
+async function pedirPermissaoGaleria() {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+    if (status !== 'granted'){
+        Alert.alert("Permissão negada","Precisamos de acesso a sua galeria para que você possa adicionar fotos ao seu comentário dessa forma (fotos são opcionais)")
         return false
     }
     return true
@@ -30,8 +39,9 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
     //controla a altura do text input do comentário
     const [altura, setAltura] = useState(40)
 
-    //controla a visibilidade do modal de visualização da foto tirada
+    //controla a visibilidade do modal de visualização da foto tirada e seleção de método de upload de foto
     const [modalVisivel, setModalVisivel] = useState(false)
+    const [escolherMetodoVisivel, setEscolherMetodoVisivel] = useState(false)
 
     const { user, token } = useAuth()
 
@@ -79,6 +89,22 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
         if (!result.canceled && result.assets.length > 0) {
             const foto = result.assets[0]
             setFoto(`data:image/jpeg;base64,${foto.base64}`)
+        }
+    }
+
+    async function escolherDaGaleria() {
+        const temPermissao = await pedirPermissaoGaleria()
+        if (!temPermissao) return
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            base64: true,
+            quality: 0.7,
+            allowsEditing: true
+        })
+
+        if (!result.canceled && result.assets.length > 0) {
+            const img = result.assets[0]
+            setFoto(`data:image/jpeg;base64,${img.base64}`)
         }
     }
 
@@ -204,11 +230,23 @@ export default function FormularioComentario({ recipe }: FormularioComentarioPro
                     <Button
                         icon="camera"
                         mode="contained-tonal"
-                        onPress={tirarFoto}
+                        onPress={() => setEscolherMetodoVisivel(true)}
                         style={{ marginBottom: 10, backgroundColor: "#22557A" }}
                         labelStyle={{ color: "white" }} >
-                        Tirar Foto
+                        Adicionar Imagem
                     </Button>
+                    <Portal>
+                        <Modal visible={escolherMetodoVisivel} onDismiss={()=> setEscolherMetodoVisivel(false)}>
+                            <Card style={{padding: 20, margin: 13}}>
+                                <Button buttonColor="#22557A" textColor="#FFFF" style={{marginBottom: 10}} onPress={() => {setEscolherMetodoVisivel(false); tirarFoto()}}>
+                                    Tirar foto
+                                </Button>
+                                <Button buttonColor="#22557A" textColor="#FFFF" onPress={() => {setEscolherMetodoVisivel(false); escolherDaGaleria()}}>
+                                    Escolher da galeria
+                                </Button>
+                            </Card>
+                        </Modal>
+                    </Portal>
                     {foto && (
                         <>
                             <TouchableOpacity
