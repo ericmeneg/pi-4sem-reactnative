@@ -136,7 +136,7 @@ const SPOONACULAR_API_KEY = process.env.SPOONACULAR_API_KEY;
 function shuffleArray<T>(arr: T[], seed: number): T[] {
   let t = seed;
   const rng = () => {
-    t += 0x6D2B79F5;
+    t += 0x6d2b79f5;
     let x = t;
     x = Math.imul(x ^ (x >>> 15), x | 1);
     x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
@@ -150,23 +150,23 @@ function shuffleArray<T>(arr: T[], seed: number): T[] {
 }
 
 async function getDailyRecipes(seed: number): Promise<IRecipe[]> {
-  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch"
-  const res = await fetch(`${baseUrl}?apiKey=${SPOONACULAR_API_KEY}&number=30`)
-  const data = await res.json()
-  const allRecipes: IRecipe[] = data.results ?? []
-  const shuffled = shuffleArray(allRecipes, seed)
-  return shuffled.slice(0, 3)
+  const baseUrl = "https://api.spoonacular.com/recipes/complexSearch";
+  const res = await fetch(`${baseUrl}?apiKey=${SPOONACULAR_API_KEY}&number=30`);
+  const data = await res.json();
+  const allRecipes: IRecipe[] = data.results ?? [];
+  const shuffled = shuffleArray(allRecipes, seed);
+  return shuffled.slice(0, 3);
 }
 
 function seededRand(seed: number) {
-  let t = seed
+  let t = seed;
   return function () {
-    t += 0x6D2B79F5
-    let x = t
-    x = Math.imul(x ^ (x >>> 15), x | 1)
-    x ^= x + Math.imul(x ^ (x >>> 7), x | 61)
-    return ((x ^ (x >>> 14)) >>> 0) / 4294967296
-  }
+    t += 0x6d2b79f5;
+    let x = t;
+    x = Math.imul(x ^ (x >>> 15), x | 1);
+    x ^= x + Math.imul(x ^ (x >>> 7), x | 61);
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
 export default function Home() {
@@ -184,13 +184,16 @@ export default function Home() {
   useEffect(() => {
     async function loadRecipes() {
       try {
-        const todaySeed = parseInt(new Date().toISOString().split("T")[0].replace(/-/g, ""), 10);
+        const todaySeed = parseInt(
+          new Date().toISOString().split("T")[0].replace(/-/g, ""),
+          10
+        );
         const gotRecipes = await getDailyRecipes(todaySeed);
         setRecipes(gotRecipes);
       } catch (err) {
-        setError("Falha ao carregar receitas.")
+        setError("Falha ao carregar receitas.");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     loadRecipes();
@@ -198,8 +201,8 @@ export default function Home() {
 
   const ingredientesDoMes = mesSelecionado
     ? alimentos
-      .filter((a) => a.meses.includes(mesSelecionado))
-      .map((a) => a.nome)
+        .filter((a) => a.meses.includes(mesSelecionado))
+        .map((a) => a.nome)
     : [];
 
   const styles = StyleSheet.create({
@@ -235,7 +238,7 @@ export default function Home() {
     mesSelecionadoText: {
       color: "#fff",
       fontWeight: "600",
-      fontSize: 16
+      fontSize: 16,
     },
     modalOverlay: {
       flex: 1,
@@ -260,11 +263,11 @@ export default function Home() {
     },
     mesOption: {
       paddingVertical: 14,
-      paddingHorizontal: 20
+      paddingHorizontal: 20,
     },
     mesOptionText: {
       fontSize: 16,
-      color: "#22577A"
+      color: "#22577A",
     },
     ingredientesContainer: {
       flexDirection: "row",
@@ -338,7 +341,10 @@ export default function Home() {
               Nenhuma receita disponível no momento
             </Text>
           ) : (
-            <View testID="recipeCards" style={{ alignItems: "center", gap: 20 }}>
+            <View
+              testID="recipeCards"
+              style={{ alignItems: "center", gap: 20 }}
+            >
               {recipes.map((recipe) => (
                 <RecipeCard
                   key={recipe.id}
@@ -407,7 +413,7 @@ export default function Home() {
                     <Text
                       style={[
                         styles.mesOptionText,
-                        mesSelecionado === index + 1 && { fontWeight: "bold" }
+                        mesSelecionado === index + 1 && { fontWeight: "bold" },
                       ]}
                     >
                       {item}

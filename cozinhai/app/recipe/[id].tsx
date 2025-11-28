@@ -87,7 +87,7 @@ async function fetchReviews(
     }
 
     const data = await response.json();
-    
+
     const reviews: IComment[] = Array.isArray(data)
       ? data.map((review: ReviewFromAPI) => ({
           userId: review.userId,
@@ -139,7 +139,7 @@ export default function Receita() {
         setLoadingRecipe(true);
         setError(null);
         const data = await fetchRecipe(id as string);
-        
+
         if (!data) {
           setError("Não foi possível carregar a receita");
         } else {
@@ -152,7 +152,7 @@ export default function Receita() {
         setLoadingRecipe(false);
       }
     }
-    
+
     if (id) {
       loadRecipe();
     }
@@ -188,7 +188,7 @@ export default function Receita() {
     try {
       setLoadingMoreReviews(true);
       const newOffset = offset + REVIEWS_PER_PAGE;
-      
+
       const { reviews: moreReviews, hasMore } = await fetchReviews(
         id as string,
         REVIEWS_PER_PAGE,
@@ -208,7 +208,7 @@ export default function Receita() {
 
   const handleFavoritePress = async () => {
     if (!recipe) return;
-    
+
     setLoadingFavorite(true);
     await toggleFavorite(recipe.id, recipe.title, recipe.image);
     setLoadingFavorite(false);
@@ -251,10 +251,10 @@ export default function Receita() {
     },
     headerRow: {
       flexDirection: "row",
-      justifyContent: "space-between",
+      justifyContent: "center",
       alignItems: "center",
       width: "100%",
-      paddingHorizontal: 10,
+      gap: 20,
     },
     receitaHeader: {
       flexDirection: "row",
@@ -366,7 +366,7 @@ export default function Receita() {
     <ScrollView style={styles.container}>
       <View style={styles.main}>
         <Logo />
-        
+
         <View style={styles.headerRow}>
           <VoltarHeader />
           <BookmarkButton

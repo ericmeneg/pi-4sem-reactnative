@@ -12,10 +12,9 @@ export default function VoltarHeader() {
       style={{
         flexDirection: "row",
         alignItems: "center",
-        gap: 70,
-        width: "100%",
+        gap: 50,
         justifyContent: "flex-start",
-        paddingHorizontal: 30,
+        paddingHorizontal: 20,
       }}
     >
       <Link href="../">
